@@ -52,6 +52,8 @@ tbody tr.selected td{background:#EEF5FB}
 .btn-sm{padding:5px 10px;font-size:11px}
 .btn-danger{border-color:#FFB3B3;color:#9B2226;background:#FFE8E8}
 .btn-green{background:#D8F3DC;color:#2D6A4F;border-color:#A9DFBF}
+.btn-shopify{background:#96BF48;color:#fff;border-color:#96BF48}
+.btn-shopify:hover{background:#7da33a}
 input[type="text"],input[type="date"],input[type="number"],select,textarea{padding:8px 12px;font-size:13px;border:1px solid rgba(0,0,0,0.18);border-radius:6px;background:#fff;color:#1A1A18;font-family:'Syne',sans-serif;width:100%;outline:none}
 input[type="checkbox"]{width:15px;height:15px;cursor:pointer;accent-color:#1A1A18}
 .search-row{display:flex;gap:10px;padding:14px 18px;border-bottom:1px solid rgba(0,0,0,0.10);background:#EEEDE8}
@@ -84,6 +86,11 @@ input[type="checkbox"]{width:15px;height:15px;cursor:pointer;accent-color:#1A1A1
 .supavatar{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .supname{font-size:15px;font-weight:700}
 .supcat{font-size:12px;color:#6B6B65;margin-top:2px}
+.sync-banner{background:linear-gradient(135deg,#1A1A18 0%,#2D2D2A 100%);color:#fff;border-radius:10px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
+.sync-info{font-size:12px;color:rgba(255,255,255,0.6);margin-top:3px;font-family:'DM Mono',monospace}
+.loading{display:flex;align-items:center;gap:8px;color:#9B9B93;font-size:13px;padding:20px}
+.spinner{width:16px;height:16px;border:2px solid #EEEDE8;border-top-color:#1A1A18;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.18);border-radius:3px}
 </style>
@@ -94,7 +101,7 @@ input[type="checkbox"]{width:15px;height:15px;cursor:pointer;accent-color:#1A1A1
   <div class="logo">
     <div class="logo-mark">Atelier Weaves</div>
     <div class="logo-name">MRP</div>
-    <div class="logo-sub">v2.0 · 2026</div>
+    <div class="logo-sub">v3.0 · 2026</div>
   </div>
   <nav>
     <div class="nav-label">Vue générale</div>
@@ -131,6 +138,7 @@ input[type="checkbox"]{width:15px;height:15px;cursor:pointer;accent-color:#1A1A1
 <main class="main">
   <div class="topbar">
     <div><div class="page-title" id="pageTitle">Tableau de bord</div><div class="page-sub" id="pageSub">Vue d'ensemble · Atelier Weaves</div></div>
+    <div id="topbarActions"></div>
   </div>
   <div class="content" id="content"></div>
 </main>
@@ -169,12 +177,15 @@ input[type="checkbox"]{width:15px;height:15px;cursor:pointer;accent-color:#1A1A1
 </div>
 
 <script>
+// ─── FOURNISSEURS ───────────────────────────────────────────
 const SUPPLIERS=[
   {id:"stanley-stella",name:"Stanley Stella",cat:"Hoodies & Vêtements",emoji:"👕",contact:"orders@stanleystella.com",delai:"7-10 jours",moq:"Par pièce",color:"#D6EAF8"},
   {id:"pure-country",name:"Pure Country",cat:"Tapisseries & Manches",emoji:"🧵",contact:"—",delai:"14-21 jours",moq:"Slots de 8 manches",color:"#D8F3DC"},
   {id:"jbt-industry",name:"JBT Industry",cat:"Étiquettes",emoji:"🏷️",contact:"—",delai:"10-15 jours",moq:"Par lot",color:"#FFF1CC"},
   {id:"alibaba",name:"Alibaba",cat:"Packaging",emoji:"📦",contact:"—",delai:"15-30 jours",moq:"Variable",color:"#E8DAEF"},
 ];
+
+// ─── MATIÈRES INITIALES ─────────────────────────────────────
 const INIT_MATS=[
   {name:"Drummer 2.0 - Noir S",sku:"MAT-HOO-BLA-S",qty:8,cat:"Hoodie",supplier:"stanley-stella",cost:14.96,reorder:3},
   {name:"Drummer 2.0 - Noir M",sku:"MAT-HOO-BLA-M",qty:5,cat:"Hoodie",supplier:"stanley-stella",cost:14.96,reorder:3},
@@ -200,119 +211,232 @@ const INIT_MATS=[
   {name:"Manche Edward",sku:"MAT-TAP-SLEEVE-EDWARD",qty:8,cat:"Tapisserie",supplier:"pure-country",cost:8.75,reorder:4},
   {name:"Manche Naruto",sku:"MAT-TAP-SLEEVE-NARUTO",qty:6,cat:"Tapisserie",supplier:"pure-country",cost:8.75,reorder:4},
   {name:"Manche Gojo",sku:"MAT-TAP-SLEEVE-GOJO",qty:3,cat:"Tapisserie",supplier:"pure-country",cost:8.75,reorder:4},
+  {name:"Manche Broly",sku:"MAT-TAP-SLEEVE-BROLY",qty:4,cat:"Tapisserie",supplier:"pure-country",cost:8.75,reorder:4},
+  {name:"Manche Berserk",sku:"MAT-TAP-SLEEVE-BERSERK",qty:2,cat:"Tapisserie",supplier:"pure-country",cost:8.75,reorder:4},
   {name:"Manche Custom (générique)",sku:"MAT-TAP-SLEEVE-CUSTOM",qty:995,cat:"Tapisserie",supplier:"pure-country",cost:8.75,reorder:0},
   {name:"Étiquette marque",sku:"MAT-LAB-BRAND",qty:989,cat:"Label",supplier:"jbt-industry",cost:0.12,reorder:100},
   {name:"Étiquette composition",sku:"MAT-LAB-COMPO",qty:989,cat:"Label",supplier:"jbt-industry",cost:0.18,reorder:100},
   {name:"Étiquette col",sku:"MAT-LAB-NECK",qty:989,cat:"Label",supplier:"jbt-industry",cost:0.11,reorder:100},
   {name:"Packaging",sku:"MAT-PACK",qty:500,cat:"Packaging",supplier:"alibaba",cost:0.40,reorder:50},
 ];
-const INIT_PRODS=[
-  {name:"Creation 015 - S",sku:"AW-HOO-BLA-0824-S-GOHAN",price:119,active:true,type:"best-seller",design:"Gohan",color:"Noir",size:"S"},
-  {name:"Creation 015 - M",sku:"AW-HOO-BLA-0824-M-GOHAN",price:119,active:true,type:"best-seller",design:"Gohan",color:"Noir",size:"M"},
-  {name:"Creation 015 - L",sku:"AW-HOO-BLA-0824-L-GOHAN",price:119,active:true,type:"best-seller",design:"Gohan",color:"Noir",size:"L"},
-  {name:"Creation 015 - XL",sku:"AW-HOO-BLA-0824-XL-GOHAN",price:119,active:true,type:"best-seller",design:"Gohan",color:"Noir",size:"XL"},
-  {name:"Creation 018 - S",sku:"AW-HOO-BLU-0924-S-TRIPLEKAMEHA",price:149,active:true,type:"best-seller",design:"Triple Kamehameha",color:"Marine",size:"S"},
-  {name:"Creation 018 - M",sku:"AW-HOO-BLU-0924-M-TRIPLEKAMEHA",price:149,active:true,type:"best-seller",design:"Triple Kamehameha",color:"Marine",size:"M"},
-  {name:"Creation 018 - L",sku:"AW-HOO-BLU-0924-L-TRIPLEKAMEHA",price:149,active:true,type:"best-seller",design:"Triple Kamehameha",color:"Marine",size:"L"},
-  {name:"Creation 007 - S",sku:"AW-HOO-BOR-0524-S-EDWARD",price:149,active:true,type:"best-seller",design:"Edward",color:"Bordeaux",size:"S"},
-  {name:"Creation 007 - M",sku:"AW-HOO-BOR-0524-M-EDWARD",price:149,active:true,type:"best-seller",design:"Edward",color:"Bordeaux",size:"M"},
-  {name:"Creation 007 - L",sku:"AW-HOO-BOR-0524-L-EDWARD",price:149,active:true,type:"best-seller",design:"Edward",color:"Bordeaux",size:"L"},
-  {name:"Creation 019 - S",sku:"AW-HOO-BLA-0924-S-NARUTO",price:119,active:true,type:"best-seller",design:"Naruto",color:"Noir",size:"S"},
-  {name:"Creation 019 - M",sku:"AW-HOO-BLA-0924-M-NARUTO",price:119,active:true,type:"best-seller",design:"Naruto",color:"Noir",size:"M"},
-  {name:"Creation 019 - L",sku:"AW-HOO-BLA-0924-L-NARUTO",price:119,active:true,type:"best-seller",design:"Naruto",color:"Noir",size:"L"},
-  {name:"Creation 020 - S",sku:"AW-HOO-BOR-0924-S-GOJO",price:119,active:true,type:"best-seller",design:"Gojo",color:"Bordeaux",size:"S"},
-  {name:"Creation 020 - M",sku:"AW-HOO-BOR-0924-M-GOJO",price:119,active:true,type:"best-seller",design:"Gojo",color:"Bordeaux",size:"M"},
-  {name:"Creation 020 - L",sku:"AW-HOO-BOR-0924-L-GOJO",price:119,active:true,type:"best-seller",design:"Gojo",color:"Bordeaux",size:"L"},
-  {name:"Signature - S / Noir / Avec",sku:"AW-HOO-BLA-BROD-S-CUSTOMSLEEVE",price:174,active:true,type:"custom",design:"Custom",color:"Noir",size:"S"},
-  {name:"Signature - M / Noir / Avec",sku:"AW-HOO-BLA-BROD-M-CUSTOMSLEEVE",price:174,active:true,type:"custom",design:"Custom",color:"Noir",size:"M"},
-  {name:"Signature - L / Noir / Avec",sku:"AW-HOO-BLA-BROD-L-CUSTOMSLEEVE",price:174,active:true,type:"custom",design:"Custom",color:"Noir",size:"L"},
-  {name:"Signature - S / Marine / Avec",sku:"AW-HOO-BLU-BROD-S-CUSTOMSLEEVE",price:174,active:true,type:"custom",design:"Custom",color:"Marine",size:"S"},
-];
-const RECIPES={
-  "AW-HOO-BLA-0824-S-GOHAN":[{sku:"MAT-HOO-BLA-S",qty:1},{sku:"MAT-TAP-SLEEVE-GOHAN",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-  "AW-HOO-BLA-0824-M-GOHAN":[{sku:"MAT-HOO-BLA-M",qty:1},{sku:"MAT-TAP-SLEEVE-GOHAN",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-  "AW-HOO-BLA-0824-L-GOHAN":[{sku:"MAT-HOO-BLA-L",qty:1},{sku:"MAT-TAP-SLEEVE-GOHAN",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-  "AW-HOO-BLA-0824-XL-GOHAN":[{sku:"MAT-HOO-BLA-XL",qty:1},{sku:"MAT-TAP-SLEEVE-GOHAN",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-  "AW-HOO-BLU-0924-S-TRIPLEKAMEHA":[{sku:"MAT-HOO-BLU-S",qty:1},{sku:"MAT-TAP-SLEEVE-TRIPLEKAMEHA",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-  "AW-HOO-BLU-0924-M-TRIPLEKAMEHA":[{sku:"MAT-HOO-BLU-M",qty:1},{sku:"MAT-TAP-SLEEVE-TRIPLEKAMEHA",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-  "AW-HOO-BLU-0924-L-TRIPLEKAMEHA":[{sku:"MAT-HOO-BLU-L",qty:1},{sku:"MAT-TAP-SLEEVE-TRIPLEKAMEHA",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-  "AW-HOO-BOR-0524-S-EDWARD":[{sku:"MAT-HOO-BOR-S",qty:1},{sku:"MAT-TAP-SLEEVE-EDWARD",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-  "AW-HOO-BOR-0524-M-EDWARD":[{sku:"MAT-HOO-BOR-M",qty:1},{sku:"MAT-TAP-SLEEVE-EDWARD",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-  "AW-HOO-BOR-0524-L-EDWARD":[{sku:"MAT-HOO-BOR-L",qty:1},{sku:"MAT-TAP-SLEEVE-EDWARD",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-  "AW-HOO-BLA-0924-S-NARUTO":[{sku:"MAT-HOO-BLA-S",qty:1},{sku:"MAT-TAP-SLEEVE-NARUTO",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-  "AW-HOO-BLA-0924-M-NARUTO":[{sku:"MAT-HOO-BLA-M",qty:1},{sku:"MAT-TAP-SLEEVE-NARUTO",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-  "AW-HOO-BLA-0924-L-NARUTO":[{sku:"MAT-HOO-BLA-L",qty:1},{sku:"MAT-TAP-SLEEVE-NARUTO",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-  "AW-HOO-BOR-0924-S-GOJO":[{sku:"MAT-HOO-BOR-S",qty:1},{sku:"MAT-TAP-SLEEVE-GOJO",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-  "AW-HOO-BOR-0924-M-GOJO":[{sku:"MAT-HOO-BOR-M",qty:1},{sku:"MAT-TAP-SLEEVE-GOJO",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-  "AW-HOO-BOR-0924-L-GOJO":[{sku:"MAT-HOO-BOR-L",qty:1},{sku:"MAT-TAP-SLEEVE-GOJO",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-  "AW-HOO-BLA-BROD-S-CUSTOMSLEEVE":[{sku:"MAT-HOO-BLA-S",qty:1},{sku:"MAT-TAP-SLEEVE-CUSTOM",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-  "AW-HOO-BLA-BROD-M-CUSTOMSLEEVE":[{sku:"MAT-HOO-BLA-M",qty:1},{sku:"MAT-TAP-SLEEVE-CUSTOM",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-  "AW-HOO-BLA-BROD-L-CUSTOMSLEEVE":[{sku:"MAT-HOO-BLA-L",qty:1},{sku:"MAT-TAP-SLEEVE-CUSTOM",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-  "AW-HOO-BLU-BROD-S-CUSTOMSLEEVE":[{sku:"MAT-HOO-BLU-S",qty:1},{sku:"MAT-TAP-SLEEVE-CUSTOM",qty:1},{sku:"MAT-LAB-BRAND",qty:1},{sku:"MAT-LAB-COMPO",qty:1},{sku:"MAT-LAB-NECK",qty:1},{sku:"MAT-PACK",qty:1}],
-};
 
-function loadState(){try{const s=localStorage.getItem('aw_mrp_v2');if(s)return JSON.parse(s);}catch(e){}
-  return{products:INIT_PRODS.map(p=>({...p,stock:0})),materials:INIT_MATS.map(m=>({...m})),productions:[],purchaseOrders:[],pc:1,poc:1};}
-function save(){localStorage.setItem('aw_mrp_v2',JSON.stringify(S));}
+// ─── STATE ──────────────────────────────────────────────────
+function loadState(){
+  try{const s=localStorage.getItem('aw_mrp_v3');if(s)return JSON.parse(s);}catch(e){}
+  return{products:[],materials:INIT_MATS.map(m=>({...m})),productions:[],purchaseOrders:[],pc:1,poc:1,lastSync:null};
+}
+function save(){localStorage.setItem('aw_mrp_v3',JSON.stringify(S));}
 let S=loadState();
 let selP=new Set(),selM=new Set(),curRecId=null,curTab='dashboard';
+let shopifyProducts=[],shopifyOrders=[];
 
+// ─── HELPERS ────────────────────────────────────────────────
 function getSup(id){return SUPPLIERS.find(s=>s.id===id)||{name:id,emoji:'🏭',color:'#eee'};}
 function getMat(sku){return S.materials.find(m=>m.sku===sku)||{name:sku,cost:0,supplier:''};}
 function getQty(sku){const m=S.materials.find(m=>m.sku===sku);return m?m.qty:0;}
-function canMake(psku){const r=RECIPES[psku];if(!r)return'?';for(const i of r){if(getQty(i.sku)<i.qty)return'no';}return'ok';}
+function canMake(psku){
+  const p=S.products.find(p=>p.sku===psku);if(!p)return'?';
+  const recipe=buildRecipe(psku);
+  if(!recipe.length)return'?';
+  for(const r of recipe){if(getQty(r.sku)<r.qty)return'no';}
+  return'ok';
+}
+function buildRecipe(psku){
+  const p=S.products.find(p=>p.sku===psku);if(!p)return[];
+  const parts=psku.split('-');
+  const color=parts[2];const size=parts[4];const design=parts[5];
+  const hoodieSku=`MAT-HOO-${color}-${size}`;
+  const tapSku=design==='CUSTOMSLEEVE'?'MAT-TAP-SLEEVE-CUSTOM':`MAT-TAP-SLEEVE-${design}`;
+  const recipe=[{sku:'MAT-LAB-BRAND',qty:1},{sku:'MAT-LAB-COMPO',qty:1},{sku:'MAT-LAB-NECK',qty:1},{sku:'MAT-PACK',qty:1}];
+  if(S.materials.find(m=>m.sku===hoodieSku))recipe.unshift({sku:hoodieSku,qty:1});
+  if(design!=='ANIMES'&&design!=='POKEMON')recipe.splice(1,0,{sku:tapSku,qty:1});
+  return recipe;
+}
 function today(){return new Date().toISOString().split('T')[0];}
 function fd(d){if(!d||d==='—')return'—';try{const[y,m,day]=d.split('-');return`${day}/${m}/${y}`;}catch(e){return d;}}
+function poSB(s){if(s==='Envoyé au fournisseur')return'bb';if(s==='Réceptionné partiellement')return'ba';if(s==='Clôturé')return'bg';return'bg2';}
+function prSB(s){if(s==='En production')return'ba';if(s==='Terminé — prêt à expédier')return'bg';if(s==='Matériaux reçus')return'bb';return'bg2';}
 
-const PAGES={dashboard:['Tableau de bord',"Vue d'ensemble · Atelier Weaves"],produits:['Produits finis','Stock & disponibilité'],matieres:['Matières premières','Inventaire composantes'],production:['Production','Ordres envoyés à Mélanie'],po:['Purchase Orders','Commandes fournisseurs'],fournisseurs:['Fournisseurs','Répertoire']};
-function nav(tab){curTab=tab;selP.clear();selM.clear();document.querySelectorAll('.nav-item').forEach((el,i)=>{el.classList.toggle('active',['dashboard','produits','matieres','production','po','fournisseurs'][i]===tab);});const[t,s]=PAGES[tab];document.getElementById('pageTitle').textContent=t;document.getElementById('pageSub').textContent=s;render();}
+// ─── SHOPIFY SYNC ───────────────────────────────────────────
+async function syncShopify(){
+  const btn=document.getElementById('syncBtn');
+  if(btn){btn.textContent='⏳ Synchro...';btn.disabled=true;}
+  try{
+    const res=await fetch('/api/shopify?endpoint=products');
+    const data=await res.json();
+    if(data.products){
+      shopifyProducts=data.products;
+      // Convertir les produits Shopify en format MRP
+      const newProds=[];
+      for(const prod of data.products){
+        if(prod.title==='Carte-cadeau ATELIER WEAVES')continue;
+        for(const v of prod.variants){
+          if(!v.sku)continue;
+          const parts=v.sku.split('-');
+          if(parts.length<5)continue;
+          const color=parts[2];
+          const colorMap={'BLA':'Noir','BLU':'Marine','BOR':'Bordeaux','BEI':'Beige','GRA':'Gris','PIN':'Rose','RED':'Rouge','KAK':'Kaki','WHI':'Blanc'};
+          const typeMap={'HOO':'Hoodie','ZIP':'Veste zippée','CRE':'Crewneck','JAC':'Jacket','PAN':'Pantalon','TSH':'T-Shirt','BOM':'Bomber'};
+          const type=parts[1];
+          const design=parts[5]||'';
+          const isCustom=design==='CUSTOMSLEEVE';
+          const isBestSeller=prod.tags&&prod.tags.includes('badge: PREORDER')&&!isCustom;
+          newProds.push({
+            name:`${prod.title} - ${v.title}`,
+            sku:v.sku,
+            price:parseFloat(v.price),
+            active:prod.status==='active',
+            type:isCustom?'custom':'best-seller',
+            design:design,
+            color:colorMap[color]||color,
+            size:v.title.split(' / ')[0]||v.title,
+            stock:v.inventory_quantity>0?v.inventory_quantity:0,
+            shopifyId:v.id,
+            productType:typeMap[type]||type,
+          });
+        }
+      }
+      S.products=newProds;
+      S.lastSync=new Date().toISOString();
+      save();
+      if(btn){btn.textContent='✓ Synchronisé';btn.style.background='#2D6A4F';}
+      setTimeout(()=>{if(btn){btn.textContent='↻ Sync Shopify';btn.disabled=false;btn.style.background='';}render();},2000);
+      render();
+    }
+  }catch(e){
+    if(btn){btn.textContent='✕ Erreur';btn.disabled=false;}
+    console.error('Sync error:',e);
+  }
+}
 
-function render(){const c=document.getElementById('content');if(curTab==='dashboard')c.innerHTML=rDash();else if(curTab==='produits')c.innerHTML=rProds();else if(curTab==='matieres')c.innerHTML=rMats();else if(curTab==='production')c.innerHTML=rProd();else if(curTab==='po')c.innerHTML=rPO();else if(curTab==='fournisseurs')c.innerHTML=rSups();}
+// ─── NAVIGATION ─────────────────────────────────────────────
+const PAGES={dashboard:['Tableau de bord',"Vue d'ensemble · Atelier Weaves"],produits:['Produits finis','Stock & disponibilité · Synchronisé depuis Shopify'],matieres:['Matières premières','Inventaire composantes · Tous fournisseurs'],production:['Production','Ordres envoyés à Mélanie'],po:['Purchase Orders','Commandes fournisseurs'],fournisseurs:['Fournisseurs','Répertoire']};
+function nav(tab){
+  curTab=tab;selP.clear();selM.clear();
+  document.querySelectorAll('.nav-item').forEach((el,i)=>{el.classList.toggle('active',['dashboard','produits','matieres','production','po','fournisseurs'][i]===tab);});
+  const[t,s]=PAGES[tab];
+  document.getElementById('pageTitle').textContent=t;
+  document.getElementById('pageSub').textContent=s;
+  // Bouton sync dans topbar pour l'onglet produits
+  const ta=document.getElementById('topbarActions');
+  if(tab==='produits'||tab==='dashboard'){
+    ta.innerHTML=`<button id="syncBtn" class="btn btn-shopify" onclick="syncShopify()">↻ Sync Shopify</button>`;
+  } else {
+    ta.innerHTML='';
+  }
+  render();
+}
 
+// ─── RENDER ─────────────────────────────────────────────────
+function render(){
+  const c=document.getElementById('content');
+  if(curTab==='dashboard')c.innerHTML=rDash();
+  else if(curTab==='produits')c.innerHTML=rProds();
+  else if(curTab==='matieres')c.innerHTML=rMats();
+  else if(curTab==='production')c.innerHTML=rProd();
+  else if(curTab==='po')c.innerHTML=rPO();
+  else if(curTab==='fournisseurs')c.innerHTML=rSups();
+}
+
+// ─── DASHBOARD ──────────────────────────────────────────────
 function rDash(){
-  const act=S.products.filter(p=>p.active),bs=act.filter(p=>p.type==='best-seller');
+  const act=S.products.filter(p=>p.active);
+  const bs=act.filter(p=>p.type==='best-seller');
+  const inStock=act.filter(p=>p.stock>0).length;
   const alerts=S.materials.filter(m=>m.reorder>0&&m.qty<=m.reorder&&m.cat!=='Label'&&m.cat!=='Packaging');
-  return`<div class="metrics">
-    <div class="metric-card"><div class="metric-label">Produits actifs</div><div class="metric-value">${act.length}</div><div class="metric-sub">${bs.length} best-sellers</div></div>
-    <div class="metric-card"><div class="metric-label">En stock</div><div class="metric-value" style="color:#2D6A4F">${act.filter(p=>p.stock>0).length}</div><div class="metric-sub">produits finis</div></div>
+  const syncTime=S.lastSync?new Date(S.lastSync).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'Jamais synchronisé';
+
+  return`
+  <div class="sync-banner">
+    <div>
+      <div style="font-size:14px;font-weight:700">Connexion Shopify active</div>
+      <div class="sync-info">Dernière synchro : ${syncTime} · ${act.length} produits · atelier-weaves.myshopify.com</div>
+    </div>
+    <button id="syncBtn" class="btn btn-shopify" onclick="syncShopify()">↻ Synchroniser</button>
+  </div>
+  <div class="metrics">
+    <div class="metric-card"><div class="metric-label">Produits actifs</div><div class="metric-value">${act.length||'—'}</div><div class="metric-sub">${bs.length} best-sellers</div></div>
+    <div class="metric-card"><div class="metric-label">En stock</div><div class="metric-value" style="color:#2D6A4F">${inStock}</div><div class="metric-sub">produits finis</div></div>
     <div class="metric-card"><div class="metric-label">En production</div><div class="metric-value" style="color:#7B4F12">${S.productions.filter(o=>o.status!=='Terminé — prêt à expédier').length}</div><div class="metric-sub">ordres chez Mélanie</div></div>
     <div class="metric-card"><div class="metric-label">PO ouverts</div><div class="metric-value" style="color:#1B4F72">${S.purchaseOrders.filter(o=>o.status!=='Clôturé').length}</div><div class="metric-sub">commandes fournisseurs</div></div>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
     <div class="card">
-      <div class="card-header"><span class="card-title">Statut best-sellers</span><button class="btn btn-sm" onclick="nav('produits')">Voir tout →</button></div>
-      <table><thead><tr><th>Création</th><th>Taille</th><th>Stock</th><th>Matériaux</th></tr></thead><tbody>
-      ${bs.slice(0,12).map(p=>`<tr><td style="font-weight:600">${p.design}</td><td class="mono">${p.size}</td><td>${p.stock>0?`<span class="badge bg">${p.stock}</span>`:'<span class="badge br">0</span>'}</td><td>${canMake(p.sku)==='ok'?'<span class="badge bg">OK</span>':canMake(p.sku)==='no'?'<span class="badge br">Insuffisant</span>':'<span class="badge bg2">—</span>'}</td></tr>`).join('')}
-      </tbody></table>
+      <div class="card-header"><span class="card-title">Statut best-sellers (${bs.length})</span><button class="btn btn-sm" onclick="nav('produits')">Voir tout →</button></div>
+      ${act.length===0?`<div class="empty"><div class="empty-icon">🔄</div><div class="empty-text">Aucun produit chargé</div><div class="empty-sub">Cliquez "Synchroniser" pour importer depuis Shopify</div></div>`:`
+      <table><thead><tr><th>Création</th><th>Taille</th><th>Couleur</th><th>Stock Shopify</th></tr></thead><tbody>
+      ${bs.slice(0,15).map(p=>`<tr>
+        <td style="font-weight:600">${p.design}</td>
+        <td class="mono">${p.size}</td>
+        <td style="font-size:12px">${p.color}</td>
+        <td>${p.stock>0?`<span class="badge bg">${p.stock}</span>`:'<span class="badge br">0</span>'}</td>
+      </tr>`).join('')}
+      </tbody></table>`}
     </div>
     <div>
       ${alerts.length>0?`<div class="card" style="margin-bottom:18px">
-        <div class="card-header"><span class="card-title" style="color:#7B4F12">⚠ Alertes matières</span><button class="btn btn-sm" onclick="nav('matieres')">Voir →</button></div>
+        <div class="card-header"><span class="card-title" style="color:#7B4F12">⚠ Alertes matières</span></div>
         ${alerts.slice(0,4).map(m=>`<div class="arow"><span class="sdot da"></span><div style="flex:1"><div style="font-size:13px;font-weight:600">${m.name}</div><div class="mono">${getSup(m.supplier).name}</div></div><span class="badge ba">${m.qty} restant(s)</span></div>`).join('')}
       </div>`:''}
       <div class="card">
-        <div class="card-header"><span class="card-title">PO récents</span><button class="btn btn-sm" onclick="nav('po')">Voir tout →</button></div>
-        ${S.purchaseOrders.length===0?'<div class="empty"><div class="empty-text">Aucun PO</div><div class="empty-sub">Créez-en depuis Matières premières</div></div>':S.purchaseOrders.slice(-4).reverse().map(o=>`<div class="arow"><span class="sdot ${o.status==='Clôturé'?'dg':o.status==='Réceptionné partiellement'?'da':'db'}"></span><div style="flex:1"><div style="font-size:13px;font-weight:600">${o.id} · ${getSup(o.sid).name}</div><div class="mono">Livraison : ${fd(o.delivDate)}</div></div><span class="badge ${o.status==='Clôturé'?'bg':o.status==='Réceptionné partiellement'?'ba':'bb'}">${o.status}</span></div>`).join('')}
+        <div class="card-header"><span class="card-title">Derniers ordres production</span><button class="btn btn-sm" onclick="nav('production')">Voir →</button></div>
+        ${S.productions.length===0?'<div class="empty"><div class="empty-text">Aucun ordre</div></div>':S.productions.slice(-4).reverse().map(o=>`<div class="arow"><span class="sdot ${o.status==='Terminé — prêt à expédier'?'dg':o.status==='En production'?'da':'db'}"></span><div style="flex:1"><div style="font-size:13px;font-weight:600">${o.id}</div><div class="mono">${o.products.map(p=>p.name).join(', ')}</div></div><span class="badge ${prSB(o.status)}">${o.status}</span></div>`).join('')}
       </div>
     </div>
   </div>`;
 }
 
+// ─── PRODUITS ───────────────────────────────────────────────
 function rProds(){
   const tf=document.getElementById('tf')?document.getElementById('tf').value:'all';
   const sr=document.getElementById('sp')?document.getElementById('sp').value.toLowerCase():'';
-  let pr=S.products.filter(p=>p.active);
-  if(tf!=='all')pr=pr.filter(p=>p.type===tf);
-  if(sr)pr=pr.filter(p=>p.name.toLowerCase().includes(sr)||p.design.toLowerCase().includes(sr));
-  return`<div class="selbar ${selP.size>0?'show':''}"><span>${selP.size} produit(s) sélectionné(s)</span><button class="btn btn-dark btn-sm" onclick="openProdModal()">✂ Envoyer à Mélanie</button></div>
+  const tp=document.getElementById('tp')?document.getElementById('tp').value:'all';
+  let prods=S.products.filter(p=>p.active);
+  if(tf!=='all')prods=prods.filter(p=>p.type===tf);
+  if(tp!=='all')prods=prods.filter(p=>p.productType===tp);
+  if(sr)prods=prods.filter(p=>p.name.toLowerCase().includes(sr)||p.design.toLowerCase().includes(sr)||p.sku.toLowerCase().includes(sr));
+  const types=[...new Set(S.products.map(p=>p.productType).filter(Boolean))];
+
+  if(S.products.length===0)return`<div class="card"><div class="empty"><div class="empty-icon">🔄</div><div class="empty-text">Aucun produit chargé</div><div class="empty-sub">Cliquez "Sync Shopify" en haut à droite pour importer vos produits</div></div></div>`;
+
+  return`
+  <div class="selbar ${selP.size>0?'show':''}">
+    <span>${selP.size} produit(s) sélectionné(s)</span>
+    <button class="btn btn-dark btn-sm" onclick="openProdModal()">✂ Envoyer à Mélanie</button>
+  </div>
   <div class="card">
-    <div class="search-row"><input id="sp" placeholder="Rechercher..." value="${sr}" oninput="render()" style="flex:1"><select id="tf" onchange="render()" style="width:160px"><option value="all" ${tf==='all'?'selected':''}>Tous</option><option value="best-seller" ${tf==='best-seller'?'selected':''}>Best-sellers</option><option value="custom" ${tf==='custom'?'selected':''}>Custom</option></select></div>
-    <table><thead><tr><th style="width:36px"><input type="checkbox" onchange="togAllP(this)"></th><th>Produit</th><th>SKU</th><th>Type</th><th>Couleur</th><th>Taille</th><th>Stock fini</th><th>Matériaux</th><th>Prix</th></tr></thead><tbody>
-    ${pr.map(p=>{const can=canMake(p.sku);return`<tr class="${selP.has(p.sku)?'selected':''}"><td><input type="checkbox" ${selP.has(p.sku)?'checked':''} onchange="togP('${p.sku}',this)"></td><td style="font-weight:600">${p.name}</td><td class="mono">${p.sku}</td><td><span class="badge ${p.type==='best-seller'?'bb':'bg2'}">${p.type==='best-seller'?'Best-seller':'Custom'}</span></td><td>${p.color||'—'}</td><td class="mono">${p.size}</td><td><input type="number" value="${p.stock}" min="0" style="width:60px;padding:4px 6px;font-size:12px" onchange="updPS('${p.sku}',this.value)"></td><td>${can==='ok'?'<span class="badge bg">OK</span>':can==='no'?'<span class="badge br">Insuffisant</span>':'<span class="badge bg2">—</span>'}</td><td style="font-weight:600">${p.price}€</td></tr>`;}).join('')}
-    </tbody></table>
+    <div class="search-row">
+      <input id="sp" placeholder="Rechercher..." value="${sr}" oninput="render()" style="flex:1">
+      <select id="tf" onchange="render()" style="width:140px">
+        <option value="all" ${tf==='all'?'selected':''}>Tous types</option>
+        <option value="best-seller" ${tf==='best-seller'?'selected':''}>Best-sellers</option>
+        <option value="custom" ${tf==='custom'?'selected':''}>Custom</option>
+      </select>
+      <select id="tp" onchange="render()" style="width:130px">
+        <option value="all">Tous produits</option>
+        ${types.map(t=>`<option value="${t}" ${tp===t?'selected':''}>${t}</option>`).join('')}
+      </select>
+    </div>
+    <table>
+      <thead><tr><th style="width:36px"><input type="checkbox" onchange="togAllP(this)"></th><th>Produit</th><th>SKU</th><th>Type</th><th>Couleur</th><th>Taille</th><th>Stock Shopify</th><th>Prix</th></tr></thead>
+      <tbody>
+      ${prods.map(p=>`<tr class="${selP.has(p.sku)?'selected':''}">
+        <td><input type="checkbox" ${selP.has(p.sku)?'checked':''} onchange="togP('${p.sku}',this)"></td>
+        <td style="font-weight:600;font-size:12px">${p.name}</td>
+        <td class="mono">${p.sku}</td>
+        <td><span class="badge ${p.type==='best-seller'?'bb':'bg2'}">${p.type==='best-seller'?'Best-seller':'Custom'}</span></td>
+        <td style="font-size:12px">${p.color||'—'}</td>
+        <td class="mono">${p.size}</td>
+        <td>${p.stock>0?`<span class="badge bg">${p.stock}</span>`:'<span class="badge br">0</span>'}</td>
+        <td style="font-weight:600">${p.price}€</td>
+      </tr>`).join('')}
+      </tbody>
+    </table>
+    <div style="padding:10px 18px;font-size:11px;color:#9B9B93;border-top:1px solid rgba(0,0,0,0.07)">${prods.length} produit(s) affiché(s) sur ${S.products.filter(p=>p.active).length} actifs</div>
   </div>`;
 }
 
+// ─── MATIÈRES ───────────────────────────────────────────────
 function rMats(){
   const cf=document.getElementById('cf')?document.getElementById('cf').value:'all';
   const sr=document.getElementById('sm')?document.getElementById('sm').value.toLowerCase():'';
@@ -320,110 +444,206 @@ function rMats(){
   if(cf!=='all')mats=mats.filter(m=>m.cat===cf);
   if(sr)mats=mats.filter(m=>m.name.toLowerCase().includes(sr)||m.sku.toLowerCase().includes(sr));
   const cats=[...new Set(S.materials.map(m=>m.cat))];
-  return`<div class="selbar ${selM.size>0?'show':''}"><span>${selM.size} matière(s) sélectionnée(s)</span><button class="btn btn-dark btn-sm" onclick="openPOModal()">📦 Créer des PO fournisseurs</button></div>
+  return`
+  <div class="selbar ${selM.size>0?'show':''}">
+    <span>${selM.size} matière(s) sélectionnée(s)</span>
+    <button class="btn btn-dark btn-sm" onclick="openPOModal()">📦 Créer des PO fournisseurs</button>
+  </div>
   <div class="card">
-    <div class="search-row"><input id="sm" placeholder="Rechercher..." value="${sr}" oninput="render()" style="flex:1"><select id="cf" onchange="render()" style="width:160px"><option value="all">Toutes catégories</option>${cats.map(c=>`<option value="${c}" ${cf===c?'selected':''}>${c}</option>`).join('')}</select></div>
-    <table><thead><tr><th style="width:36px"><input type="checkbox" onchange="togAllM(this)"></th><th>Matière</th><th>SKU</th><th>Catégorie</th><th>Fournisseur</th><th>Coût</th><th>Stock</th><th>Seuil</th><th>Valeur</th></tr></thead><tbody>
-    ${mats.map(m=>{const al=m.reorder>0&&m.qty<=m.reorder;return`<tr class="${selM.has(m.sku)?'selected':''}"><td><input type="checkbox" ${selM.has(m.sku)?'checked':''} onchange="togM('${m.sku}',this)"></td><td style="font-weight:600">${m.name}</td><td class="mono">${m.sku}</td><td><span class="badge bg2">${m.cat}</span></td><td style="font-size:12px">${getSup(m.supplier).emoji} ${getSup(m.supplier).name}</td><td class="mono">${m.cost.toFixed(2)}€</td><td><div style="display:flex;align-items:center;gap:6px">${al?'<span class="sdot da"></span>':''}<input type="number" value="${m.qty}" min="0" style="width:65px;padding:4px 6px;font-size:12px${al?';border-color:#F5A623':''}" onchange="updMQ('${m.sku}',this.value)"></div></td><td class="mono" style="${al?'color:#7B4F12;font-weight:600':''}">${m.reorder>0?m.reorder:'—'}</td><td class="mono">${(m.qty*m.cost).toFixed(2)}€</td></tr>`;}).join('')}
-    </tbody></table>
+    <div class="search-row">
+      <input id="sm" placeholder="Rechercher..." value="${sr}" oninput="render()" style="flex:1">
+      <select id="cf" onchange="render()" style="width:160px">
+        <option value="all">Toutes catégories</option>
+        ${cats.map(c=>`<option value="${c}" ${cf===c?'selected':''}>${c}</option>`).join('')}
+      </select>
+    </div>
+    <table>
+      <thead><tr><th style="width:36px"><input type="checkbox" onchange="togAllM(this)"></th><th>Matière</th><th>SKU</th><th>Catégorie</th><th>Fournisseur</th><th>Coût</th><th>Stock</th><th>Seuil</th><th>Valeur</th></tr></thead>
+      <tbody>
+      ${mats.map(m=>{const al=m.reorder>0&&m.qty<=m.reorder;return`<tr class="${selM.has(m.sku)?'selected':''}">
+        <td><input type="checkbox" ${selM.has(m.sku)?'checked':''} onchange="togM('${m.sku}',this)"></td>
+        <td style="font-weight:600">${m.name}</td>
+        <td class="mono">${m.sku}</td>
+        <td><span class="badge bg2">${m.cat}</span></td>
+        <td style="font-size:12px">${getSup(m.supplier).emoji} ${getSup(m.supplier).name}</td>
+        <td class="mono">${m.cost.toFixed(2)}€</td>
+        <td><div style="display:flex;align-items:center;gap:6px">${al?'<span class="sdot da"></span>':''}<input type="number" value="${m.qty}" min="0" style="width:65px;padding:4px 6px;font-size:12px${al?';border-color:#F5A623':''}" onchange="updMQ('${m.sku}',this.value)"></div></td>
+        <td class="mono" style="${al?'color:#7B4F12;font-weight:600':''}">${m.reorder>0?m.reorder:'—'}</td>
+        <td class="mono">${(m.qty*m.cost).toFixed(2)}€</td>
+      </tr>`;}).join('')}
+      </tbody>
+    </table>
     <div style="padding:12px 18px;border-top:1px solid rgba(0,0,0,0.1);text-align:right;font-size:12px;color:#6B6B65">Valeur totale : <strong style="color:#1A1A18">${S.materials.reduce((s,m)=>s+m.qty*m.cost,0).toFixed(2)}€</strong></div>
   </div>`;
 }
 
+// ─── PRODUCTION ─────────────────────────────────────────────
 function rProd(){
   const sts=['Commande reçue','Matériaux reçus','En production','Terminé — prêt à expédier'];
   const ac=S.productions.filter(o=>o.status!=='Terminé — prêt à expédier');
   const dn=S.productions.filter(o=>o.status==='Terminé — prêt à expédier');
-  return`<div style="display:flex;justify-content:flex-end;margin-bottom:16px"><button class="btn btn-dark" onclick="nav('produits')">+ Nouvel ordre</button></div>
-  ${S.productions.length===0?'<div class="card"><div class="empty"><div class="empty-icon">✂️</div><div class="empty-text">Aucun ordre de production</div><div class="empty-sub">Sélectionnez des produits finis et cliquez Envoyer à Mélanie</div></div></div>':''}
-  ${ac.length>0?`<div class="card"><div class="card-header"><span class="card-title">En cours (${ac.length})</span></div><table><thead><tr><th>Réf.</th><th>Type</th><th>Produits</th><th>Statut</th><th>Récupération</th><th>Note</th><th></th></tr></thead><tbody>
-  ${ac.map(o=>`<tr><td class="mono" style="font-weight:600">${o.id}</td><td><span class="badge ${o.type==='best-seller'?'bb':'bg2'}">${o.type==='best-seller'?'Best-seller':'Custom'}</span></td><td style="font-size:12px">${o.products.map(p=>p.name).join('<br>')}</td><td><select onchange="updPrSt('${o.id}',this.value)" style="font-size:12px;padding:5px 8px;width:190px">${sts.map(s=>`<option ${o.status===s?'selected':''}>${s}</option>`).join('')}</select></td><td class="mono">${fd(o.date)}</td><td style="font-size:12px;color:#6B6B65">${o.note||'—'}</td><td><button class="btn btn-sm btn-danger" onclick="delProd('${o.id}')">✕</button></td></tr>`).join('')}
+  return`
+  <div style="display:flex;justify-content:flex-end;margin-bottom:16px"><button class="btn btn-dark" onclick="nav('produits')">+ Nouvel ordre</button></div>
+  ${S.productions.length===0?'<div class="card"><div class="empty"><div class="empty-icon">✂️</div><div class="empty-text">Aucun ordre de production</div><div class="empty-sub">Sélectionnez des produits dans Produits finis et cliquez "Envoyer à Mélanie"</div></div></div>':''}
+  ${ac.length>0?`<div class="card"><div class="card-header"><span class="card-title">En cours (${ac.length})</span></div>
+  <table><thead><tr><th>Réf.</th><th>Type</th><th>Produits</th><th>Statut</th><th>Récupération</th><th>Note</th><th></th></tr></thead><tbody>
+  ${ac.map(o=>`<tr>
+    <td class="mono" style="font-weight:600">${o.id}</td>
+    <td><span class="badge ${o.type==='best-seller'?'bb':'bg2'}">${o.type==='best-seller'?'Best-seller':'Custom'}</span></td>
+    <td style="font-size:12px;max-width:200px">${o.products.map(p=>p.name).join('<br>')}</td>
+    <td><select onchange="updPrSt('${o.id}',this.value)" style="font-size:12px;padding:5px 8px;width:190px">
+      ${sts.map(s=>`<option ${o.status===s?'selected':''}>${s}</option>`).join('')}
+    </select></td>
+    <td class="mono">${fd(o.date)}</td>
+    <td style="font-size:12px;color:#6B6B65">${o.note||'—'}</td>
+    <td><button class="btn btn-sm btn-danger" onclick="delProd('${o.id}')">✕</button></td>
+  </tr>`).join('')}
   </tbody></table></div>`:''}
-  ${dn.length>0?`<div class="card"><div class="card-header"><span class="card-title" style="color:#2D6A4F">✓ Terminés (${dn.length})</span></div><table><thead><tr><th>Réf.</th><th>Produits</th><th>Date</th><th>Note</th></tr></thead><tbody>${dn.map(o=>`<tr><td class="mono" style="font-weight:600">${o.id}</td><td style="font-size:12px">${o.products.map(p=>p.name).join(', ')}</td><td class="mono">${fd(o.date)}</td><td style="font-size:12px;color:#6B6B65">${o.note||'—'}</td></tr>`).join('')}</tbody></table></div>`:''}`;
+  ${dn.length>0?`<div class="card"><div class="card-header"><span class="card-title" style="color:#2D6A4F">✓ Terminés (${dn.length})</span></div>
+  <table><thead><tr><th>Réf.</th><th>Produits</th><th>Date</th><th>Note</th></tr></thead><tbody>
+  ${dn.map(o=>`<tr><td class="mono" style="font-weight:600">${o.id}</td><td style="font-size:12px">${o.products.map(p=>p.name).join(', ')}</td><td class="mono">${fd(o.date)}</td><td style="font-size:12px;color:#6B6B65">${o.note||'—'}</td></tr>`).join('')}
+  </tbody></table></div>`:''}`;
 }
 
+// ─── PURCHASE ORDERS ────────────────────────────────────────
 function rPO(){
   const op=S.purchaseOrders.filter(o=>o.status!=='Clôturé');
   const cl=S.purchaseOrders.filter(o=>o.status==='Clôturé');
   const poCard=(o,actions)=>{
     const sup=getSup(o.sid);
     const tot=o.items.reduce((s,i)=>s+i.qty*i.cost,0);
-    return`<div class="ocard"><div class="ochead"><div><div style="display:flex;align-items:center;gap:10px;margin-bottom:4px"><span class="oid">${o.id}</span><span>${sup.emoji}</span><span style="font-size:13px;font-weight:700">${sup.name}</span><span class="badge ${o.status==='Clôturé'?'bg':o.status==='Réceptionné partiellement'?'ba':'bb'}">${o.status}</span></div><div class="ometa">Créé le ${fd(o.createdAt)} · Livraison souhaitée : ${fd(o.delivDate)} · Total estimé : <strong>${tot.toFixed(2)}€</strong>${o.note?' · '+o.note:''}</div></div>${actions?`<div style="display:flex;gap:6px"><button class="btn btn-sm btn-green" onclick="openRecModal('${o.id}')">📥 Réceptionner</button><button class="btn btn-sm btn-danger" onclick="closePO('${o.id}')">Clôturer</button></div>`:''}</div>
-    <table style="font-size:12px"><thead><tr><th>Matière</th><th>Qté commandée</th><th>Coût unit.</th><th>Total</th></tr></thead><tbody>${o.items.map(i=>`<tr><td style="font-weight:600">${getMat(i.sku).name}</td><td>${i.qty}</td><td class="mono">${i.cost.toFixed(2)}€</td><td class="mono">${(i.qty*i.cost).toFixed(2)}€</td></tr>`).join('')}</tbody></table></div>`;
+    return`<div class="ocard">
+      <div class="ochead">
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+            <span class="oid">${o.id}</span><span>${sup.emoji}</span>
+            <span style="font-size:13px;font-weight:700">${sup.name}</span>
+            <span class="badge ${poSB(o.status)}">${o.status}</span>
+          </div>
+          <div class="ometa">Créé le ${fd(o.createdAt)} · Livraison souhaitée : ${fd(o.delivDate)} · Total : <strong>${tot.toFixed(2)}€</strong>${o.note?' · '+o.note:''}</div>
+        </div>
+        ${actions?`<div style="display:flex;gap:6px">
+          <button class="btn btn-sm btn-green" onclick="openRecModal('${o.id}')">📥 Réceptionner</button>
+          <button class="btn btn-sm btn-danger" onclick="closePO('${o.id}')">Clôturer</button>
+        </div>`:''}
+      </div>
+      <table style="font-size:12px"><thead><tr><th>Matière</th><th>Qté</th><th>Coût unit.</th><th>Total</th></tr></thead><tbody>
+      ${o.items.map(i=>`<tr><td style="font-weight:600">${getMat(i.sku).name}</td><td>${i.qty}</td><td class="mono">${i.cost.toFixed(2)}€</td><td class="mono">${(i.qty*i.cost).toFixed(2)}€</td></tr>`).join('')}
+      </tbody></table>
+    </div>`;
   };
-  return`<div style="display:flex;justify-content:flex-end;margin-bottom:16px"><button class="btn btn-dark" onclick="nav('matieres')">+ Nouveau PO</button></div>
-  ${S.purchaseOrders.length===0?'<div class="card"><div class="empty"><div class="empty-icon">📄</div><div class="empty-text">Aucun purchase order</div><div class="empty-sub">Sélectionnez des matières premières et cliquez Créer des PO</div></div></div>':''}
+  return`
+  <div style="display:flex;justify-content:flex-end;margin-bottom:16px"><button class="btn btn-dark" onclick="nav('matieres')">+ Nouveau PO</button></div>
+  ${S.purchaseOrders.length===0?'<div class="card"><div class="empty"><div class="empty-icon">📄</div><div class="empty-text">Aucun purchase order</div><div class="empty-sub">Sélectionnez des matières premières et cliquez "Créer des PO"</div></div></div>':''}
   ${op.length>0?`<div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#9B9B93;margin-bottom:8px">EN COURS (${op.length})</div>${op.slice().reverse().map(o=>poCard(o,true)).join('')}`:''}
   ${cl.length>0?`<div style="margin-top:20px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#9B9B93;margin-bottom:8px">CLÔTURÉS (${cl.length})</div>${cl.slice().reverse().map(o=>poCard(o,false)).join('')}`:''}`;
 }
 
+// ─── FOURNISSEURS ───────────────────────────────────────────
 function rSups(){
   return`<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">${SUPPLIERS.map(sup=>{
     const mats=S.materials.filter(m=>m.supplier===sup.id);
     const tv=mats.reduce((s,m)=>s+m.qty*m.cost,0);
     const op=S.purchaseOrders.filter(o=>o.sid===sup.id&&o.status!=='Clôturé').length;
     const al=mats.filter(m=>m.reorder>0&&m.qty<=m.reorder).length;
-    return`<div class="supcard"><div class="suphead"><div class="supavatar" style="background:${sup.color}">${sup.emoji}</div><div><div class="supname">${sup.name}</div><div class="supcat">${sup.cat}</div></div></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;color:#6B6B65;margin-bottom:14px">
-      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9B9B93;margin-bottom:3px">Contact</div>${sup.contact}</div>
-      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9B9B93;margin-bottom:3px">Délai habituel</div>${sup.delai}</div>
-      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9B9B93;margin-bottom:3px">MOQ</div>${sup.moq}</div>
-      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9B9B93;margin-bottom:3px">PO ouverts</div><strong style="color:${op>0?'#1B4F72':'#1A1A18'}">${op}</strong></div>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding-top:14px;border-top:1px solid rgba(0,0,0,0.1);margin-bottom:14px">
-      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9B9B93;margin-bottom:3px">Références</div><div style="font-size:15px;font-weight:700">${mats.length}</div></div>
-      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9B9B93;margin-bottom:3px">Valeur stock</div><div style="font-size:15px;font-weight:700">${tv.toFixed(0)}€</div></div>
-      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9B9B93;margin-bottom:3px">Alertes</div><div style="font-size:15px;font-weight:700;color:${al>0?'#7B4F12':'#2D6A4F'}">${al}</div></div>
-    </div>
-    ${mats.length>0?`<div style="border-top:1px solid rgba(0,0,0,0.1);padding-top:12px"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#9B9B93;margin-bottom:8px">Matières (${mats.length})</div>${mats.map(m=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(0,0,0,0.07);font-size:12px"><span>${m.name}</span><span class="badge ${m.qty===0?'br':m.qty<=m.reorder&&m.reorder>0?'ba':'bg'}">${m.qty}</span></div>`).join('')}</div>`:''}
+    return`<div class="supcard">
+      <div class="suphead">
+        <div class="supavatar" style="background:${sup.color}">${sup.emoji}</div>
+        <div><div class="supname">${sup.name}</div><div class="supcat">${sup.cat}</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;color:#6B6B65;margin-bottom:14px">
+        <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9B9B93;margin-bottom:3px">Contact</div>${sup.contact}</div>
+        <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9B9B93;margin-bottom:3px">Délai</div>${sup.delai}</div>
+        <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9B9B93;margin-bottom:3px">MOQ</div>${sup.moq}</div>
+        <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9B9B93;margin-bottom:3px">PO ouverts</div><strong style="color:${op>0?'#1B4F72':'#1A1A18'}">${op}</strong></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding-top:14px;border-top:1px solid rgba(0,0,0,0.1);margin-bottom:14px">
+        <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9B9B93;margin-bottom:3px">Références</div><div style="font-size:15px;font-weight:700">${mats.length}</div></div>
+        <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9B9B93;margin-bottom:3px">Valeur stock</div><div style="font-size:15px;font-weight:700">${tv.toFixed(0)}€</div></div>
+        <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#9B9B93;margin-bottom:3px">Alertes</div><div style="font-size:15px;font-weight:700;color:${al>0?'#7B4F12':'#2D6A4F'}">${al}</div></div>
+      </div>
+      ${mats.length>0?`<div style="border-top:1px solid rgba(0,0,0,0.1);padding-top:12px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#9B9B93;margin-bottom:8px">Matières (${mats.length})</div>
+        ${mats.slice(0,8).map(m=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(0,0,0,0.06);font-size:12px"><span>${m.name}</span><span class="badge ${m.qty===0?'br':m.qty<=m.reorder&&m.reorder>0?'ba':'bg'}">${m.qty}</span></div>`).join('')}
+        ${mats.length>8?`<div style="font-size:11px;color:#9B9B93;margin-top:6px">+ ${mats.length-8} autres matières</div>`:''}
+      </div>`:''}
     </div>`;}).join('')}</div>`;
 }
 
+// ─── ACTIONS ────────────────────────────────────────────────
 function togP(sku,cb){cb.checked?selP.add(sku):selP.delete(sku);render();}
 function togAllP(cb){S.products.filter(p=>p.active).forEach(p=>cb.checked?selP.add(p.sku):selP.delete(p.sku));render();}
 function togM(sku,cb){cb.checked?selM.add(sku):selM.delete(sku);render();}
 function togAllM(cb){S.materials.forEach(m=>cb.checked?selM.add(m.sku):selM.delete(m.sku));render();}
-function updPS(sku,val){const p=S.products.find(p=>p.sku===sku);if(p){p.stock=parseInt(val)||0;save();}}
 function updMQ(sku,val){const m=S.materials.find(m=>m.sku===sku);if(m){m.qty=parseInt(val)||0;save();}}
-function updPrSt(id,val){const o=S.productions.find(o=>o.id===id);if(o){o.status=val;save();render();}}
+function updPrSt(id,val){
+  const o=S.productions.find(o=>o.id===id);
+  if(o){
+    const wasNotDone=o.status!=='Terminé — prêt à expédier';
+    o.status=val;
+    // Mettre à jour le stock produits finis quand terminé
+    if(val==='Terminé — prêt à expédier'&&wasNotDone){
+      o.products.forEach(op=>{
+        const p=S.products.find(p=>p.name===op.name);
+        if(p)p.stock=(p.stock||0)+op.qty;
+      });
+    }
+    save();render();
+  }
+}
 function delProd(id){if(confirm('Supprimer ?')){S.productions=S.productions.filter(o=>o.id!==id);save();render();}}
 function closePO(id){if(confirm('Clôturer ce PO ?')){const o=S.purchaseOrders.find(o=>o.id===id);if(o){o.status='Clôturé';save();render();}}}
 
+// ─── MODAL PRODUCTION ───────────────────────────────────────
 function openProdModal(){
   const items=[...selP].map(sku=>S.products.find(p=>p.sku===sku)).filter(Boolean);
   if(!items.length)return;
-  document.getElementById('prodItems').innerHTML=`<div style="background:#EEEDE8;border-radius:6px;padding:12px 14px"><div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#9B9B93;margin-bottom:8px">Produits à fabriquer</div>${items.map(p=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.1)"><span style="font-size:13px;font-weight:600">${p.name}</span><span class="badge ${p.type==='best-seller'?'bb':'bg2'}">${p.type==='best-seller'?'Best-seller':'Custom'}</span></div>`).join('')}</div>`;
-  const bom={};items.forEach(p=>{(RECIPES[p.sku]||[]).forEach(r=>{bom[r.sku]=(bom[r.sku]||0)+r.qty;});});
+  document.getElementById('prodItems').innerHTML=`
+    <div style="background:#EEEDE8;border-radius:6px;padding:12px 14px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#9B9B93;margin-bottom:8px">Produits à fabriquer</div>
+      ${items.map(p=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.1)"><span style="font-size:13px;font-weight:600">${p.name}</span><span class="badge ${p.type==='best-seller'?'bb':'bg2'}">${p.type==='best-seller'?'Best-seller':'Custom'}</span></div>`).join('')}
+    </div>`;
+  const bom={};items.forEach(p=>{buildRecipe(p.sku).forEach(r=>{bom[r.sku]=(bom[r.sku]||0)+r.qty;});});
   const allOk=Object.entries(bom).every(([s,q])=>getQty(s)>=q);
-  document.getElementById('prodBom').innerHTML=Object.keys(bom).length?`<div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#9B9B93;margin-bottom:8px">Matières déduites</div><table><thead><tr><th>Matière</th><th>Nécessaire</th><th>Stock</th><th>Statut</th></tr></thead><tbody>${Object.entries(bom).map(([sku,qty])=>{const av=getQty(sku);const ok=av>=qty;return`<tr><td style="font-weight:600">${getMat(sku).name}</td><td class="mono">${qty}</td><td class="mono" style="${!ok?'color:#9B2226;font-weight:600':''}">${av}</td><td>${ok?'<span class="badge bg">OK</span>':'<span class="badge br">Insuffisant</span>'}</td></tr>`;}).join('')}</tbody></table>${!allOk?'<div style="margin-top:10px;padding:10px;background:#FFE8E8;border-radius:6px;font-size:12px;color:#9B2226;font-weight:600">⚠ Certaines matières sont insuffisantes.</div>':''}`:'' ;
+  document.getElementById('prodBom').innerHTML=Object.keys(bom).length?`
+    <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#9B9B93;margin-bottom:8px">Matières qui seront déduites</div>
+    <table><thead><tr><th>Matière</th><th>Nécessaire</th><th>Stock</th><th>Statut</th></tr></thead><tbody>
+    ${Object.entries(bom).map(([sku,qty])=>{const av=getQty(sku);const ok=av>=qty;return`<tr><td style="font-weight:600">${getMat(sku).name}</td><td class="mono">${qty}</td><td class="mono" style="${!ok?'color:#9B2226;font-weight:600':''}">${av}</td><td>${ok?'<span class="badge bg">OK</span>':'<span class="badge br">Insuffisant</span>'}</td></tr>`;}).join('')}
+    </tbody></table>
+    ${!allOk?'<div style="margin-top:10px;padding:10px;background:#FFE8E8;border-radius:6px;font-size:12px;color:#9B2226;font-weight:600">⚠ Certaines matières sont insuffisantes.</div>':''}
+  `:'';
   const d=new Date();d.setDate(d.getDate()+5);
   document.getElementById('prodDate').value=d.toISOString().split('T')[0];
   document.getElementById('prodNote').value='';
   document.getElementById('prodModal').classList.add('open');
 }
+
 function confirmProduction(){
   const items=[...selP].map(sku=>S.products.find(p=>p.sku===sku)).filter(Boolean);
-  items.forEach(p=>{(RECIPES[p.sku]||[]).forEach(r=>{const m=S.materials.find(m=>m.sku===r.sku);if(m)m.qty=Math.max(0,m.qty-r.qty);});});
+  buildRecipe&&items.forEach(p=>{buildRecipe(p.sku).forEach(r=>{const m=S.materials.find(m=>m.sku===r.sku);if(m)m.qty=Math.max(0,m.qty-r.qty);});});
   const id='PROD-'+String(S.pc).padStart(3,'0');S.pc++;
   S.productions.push({id,type:items[0]?.type||'best-seller',products:items.map(p=>({name:p.name,qty:1})),status:'En production',date:document.getElementById('prodDate').value,note:document.getElementById('prodNote').value,createdAt:today()});
   selP.clear();save();closeModal('prodModal');nav('production');
 }
 
+// ─── MODAL PO ───────────────────────────────────────────────
 function openPOModal(){
   const skus=[...selM];if(!skus.length)return;
   const bySup={};skus.forEach(sku=>{const m=S.materials.find(m=>m.sku===sku);if(m){if(!bySup[m.supplier])bySup[m.supplier]=[];bySup[m.supplier].push(m);}});
   const n=Object.keys(bySup).length;
-  document.getElementById('poModalBody').innerHTML=`<div style="background:#D6EAF8;border:1px solid #A9CCE3;border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#1B4F72;font-weight:600">${n} PO sera/seront créé(s) — 1 par fournisseur</div>
-  ${Object.entries(bySup).map(([sid,mats])=>{const sup=getSup(sid);const d=new Date();d.setDate(d.getDate()+14);return`<div style="border:1px solid rgba(0,0,0,0.1);border-radius:6px;padding:14px;margin-bottom:12px">
-    <div style="font-size:14px;font-weight:700;margin-bottom:12px">${sup.emoji} ${sup.name}</div>
-    <table style="font-size:12px;margin-bottom:12px"><thead><tr><th>Matière</th><th>Qté à commander</th><th>Coût unit.</th></tr></thead><tbody>
-    ${mats.map(m=>`<tr><td style="font-weight:600">${m.name}</td><td><input type="number" id="pq-${m.sku}" value="1" min="1" style="width:70px;padding:4px 6px;font-size:12px"></td><td class="mono">${m.cost.toFixed(2)}€</td></tr>`).join('')}
-    </tbody></table>
-    <div class="frow"><label>Date de livraison souhaitée</label><input type="date" id="pd-${sid}" value="${d.toISOString().split('T')[0]}"></div>
-    <div class="frow"><label>Note (optionnel)</label><input type="text" id="pn-${sid}" placeholder="ex: urgent..."></div>
-  </div>`;}).join('')}`;
+  document.getElementById('poModalBody').innerHTML=`
+    <div style="background:#D6EAF8;border:1px solid #A9CCE3;border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#1B4F72;font-weight:600">${n} PO sera/seront créé(s) — 1 par fournisseur</div>
+    ${Object.entries(bySup).map(([sid,mats])=>{const sup=getSup(sid);const d=new Date();d.setDate(d.getDate()+14);return`<div style="border:1px solid rgba(0,0,0,0.1);border-radius:6px;padding:14px;margin-bottom:12px">
+      <div style="font-size:14px;font-weight:700;margin-bottom:12px">${sup.emoji} ${sup.name}</div>
+      <table style="font-size:12px;margin-bottom:12px"><thead><tr><th>Matière</th><th>Qté à commander</th><th>Coût unit.</th></tr></thead><tbody>
+      ${mats.map(m=>`<tr><td style="font-weight:600">${m.name}</td><td><input type="number" id="pq-${m.sku}" value="1" min="1" style="width:70px;padding:4px 6px;font-size:12px"></td><td class="mono">${m.cost.toFixed(2)}€</td></tr>`).join('')}
+      </tbody></table>
+      <div class="frow"><label>Date de livraison souhaitée</label><input type="date" id="pd-${sid}" value="${d.toISOString().split('T')[0]}"></div>
+      <div class="frow"><label>Note</label><input type="text" id="pn-${sid}" placeholder="ex: urgent..."></div>
+    </div>`;}).join('')}`;
   document.getElementById('poModal').classList.add('open');
 }
+
 function confirmPO(){
   const skus=[...selM];const bySup={};
   skus.forEach(sku=>{const m=S.materials.find(m=>m.sku===sku);if(m){if(!bySup[m.supplier])bySup[m.supplier]=[];bySup[m.supplier].push(m);}});
@@ -434,18 +654,21 @@ function confirmPO(){
   selM.clear();save();closeModal('poModal');nav('po');
 }
 
+// ─── MODAL RÉCEPTION ────────────────────────────────────────
 function openRecModal(id){
   curRecId=id;const o=S.purchaseOrders.find(o=>o.id===id);if(!o)return;
   const sup=getSup(o.sid);
-  document.getElementById('recBody').innerHTML=`<div style="font-size:14px;font-weight:700;margin-bottom:4px">${sup.emoji} ${sup.name} — ${o.id}</div>
-  <div class="mono" style="margin-bottom:16px">Livraison souhaitée : ${fd(o.delivDate)}</div>
-  <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#9B9B93;margin-bottom:10px">Confirmez les quantités reçues</div>
-  <table><thead><tr><th>Matière</th><th>Commandé</th><th>Qté reçue</th></tr></thead><tbody>
-  ${o.items.map(i=>`<tr><td style="font-weight:600">${getMat(i.sku).name}</td><td class="mono">${i.qty}</td><td><input type="number" id="rc-${i.sku}" value="${i.qty}" min="0" style="width:80px;padding:6px 8px;font-size:13px"></td></tr>`).join('')}
-  </tbody></table>
-  <div style="margin-top:14px;padding:10px;background:#D8F3DC;border-radius:6px;font-size:12px;color:#2D6A4F;font-weight:600">✓ Le stock sera mis à jour avec les quantités reçues.</div>`;
+  document.getElementById('recBody').innerHTML=`
+    <div style="font-size:14px;font-weight:700;margin-bottom:4px">${sup.emoji} ${sup.name} — ${o.id}</div>
+    <div class="mono" style="margin-bottom:16px">Livraison souhaitée : ${fd(o.delivDate)}</div>
+    <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#9B9B93;margin-bottom:10px">Confirmez les quantités reçues</div>
+    <table><thead><tr><th>Matière</th><th>Commandé</th><th>Qté reçue</th></tr></thead><tbody>
+    ${o.items.map(i=>`<tr><td style="font-weight:600">${getMat(i.sku).name}</td><td class="mono">${i.qty}</td><td><input type="number" id="rc-${i.sku}" value="${i.qty}" min="0" style="width:80px;padding:6px 8px;font-size:13px"></td></tr>`).join('')}
+    </tbody></table>
+    <div style="margin-top:14px;padding:10px;background:#D8F3DC;border-radius:6px;font-size:12px;color:#2D6A4F;font-weight:600">✓ Le stock sera mis à jour avec les quantités reçues.</div>`;
   document.getElementById('recModal').classList.add('open');
 }
+
 function confirmReception(){
   const o=S.purchaseOrders.find(o=>o.id===curRecId);if(!o)return;
   o.items.forEach(i=>{const rcv=parseInt(document.getElementById(`rc-${i.sku}`)?.value)||0;const m=S.materials.find(m=>m.sku===i.sku);if(m)m.qty+=rcv;});
@@ -453,8 +676,17 @@ function confirmReception(){
 }
 
 function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+// ─── CLOCK ──────────────────────────────────────────────────
 function updateClock(){const n=new Date();document.getElementById('clock').textContent=n.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'})+' · '+n.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});}
-setInterval(updateClock,1000);updateClock();render();
+setInterval(updateClock,1000);updateClock();
+
+// ─── INIT ───────────────────────────────────────────────────
+nav('dashboard');
+// Sync automatique au chargement
+syncShopify();
+// Sync automatique toutes les 30 minutes
+setInterval(syncShopify, 30 * 60 * 1000);
 </script>
 </body>
 </html>
