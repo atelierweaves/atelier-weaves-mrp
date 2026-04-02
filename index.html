@@ -106,6 +106,20 @@ input[type="checkbox"]{width:15px;height:15px;cursor:pointer;accent-color:var(--
 </style>
 </head>
 <body>
+<!-- ÉCRAN DE CONNEXION -->
+<div id="loginScreen" style="display:none;position:fixed;inset:0;background:var(--text);z-index:999;align-items:center;justify-content:center;flex-direction:column">
+  <div style="text-align:center;margin-bottom:40px">
+    <div style="font-size:13px;font-weight:700;letter-spacing:0.2em;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:8px">Atelier Weaves</div>
+    <div style="font-size:32px;font-weight:700;color:#fff;letter-spacing:-0.02em">MRP</div>
+  </div>
+  <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:28px;width:320px">
+    <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:16px;text-align:center">Entrez le mot de passe pour accéder</div>
+    <input type="password" id="loginPwd" placeholder="Mot de passe" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:10px 14px;font-size:14px;width:100%;margin-bottom:12px" onkeydown="if(event.key==='Enter')checkLogin()">
+    <button onclick="checkLogin()" style="width:100%;padding:10px;background:#fff;color:var(--text);border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif">Accéder au MRP →</button>
+    <div id="loginError" style="color:#FF6B6B;font-size:12px;text-align:center;margin-top:10px;display:none">Mot de passe incorrect</div>
+  </div>
+</div>
+
 <div class="layout">
 <aside class="sidebar">
   <div class="logo">
@@ -159,7 +173,37 @@ input[type="checkbox"]{width:15px;height:15px;cursor:pointer;accent-color:var(--
 </main>
 </div>
 
-<!-- MODAL PRODUCTION -->
+<!-- MODAL MATIÈRE PREMIÈRE ADD/EDIT -->
+<div class="overlay" id="matModal">
+  <div class="modal">
+    <div class="mhead"><h2 id="matModalTitle">Matière première</h2><button class="btn btn-sm" onclick="closeModal('matModal')">✕</button></div>
+    <div class="mbody">
+      <div class="fgrid">
+        <div class="frow" style="grid-column:1/-1"><label>Nom</label><input type="text" id="matName" placeholder="ex: Drummer 2.0 - Noir S"></div>
+        <div class="frow"><label>SKU</label><input type="text" id="matSku" placeholder="ex: MAT-HOO-BLA-S"></div>
+        <div class="frow"><label>Catégorie</label>
+          <select id="matCat">
+            <option value="Hoodie">Hoodie</option>
+            <option value="Tapisserie">Tapisserie</option>
+            <option value="Label">Label</option>
+            <option value="Packaging">Packaging</option>
+            <option value="Autre">Autre</option>
+          </select>
+        </div>
+        <div class="frow"><label>Fournisseur</label><select id="matSupplier"></select></div>
+        <div class="frow"><label>Coût unitaire (€)</label><input type="number" id="matCost" placeholder="ex: 14.96" step="0.01" min="0"></div>
+        <div class="frow"><label>Stock actuel</label><input type="number" id="matQty" placeholder="ex: 10" min="0"></div>
+        <div class="frow"><label>Seuil d'alerte</label><input type="number" id="matReorder" placeholder="ex: 3" min="0"></div>
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-danger btn-sm" id="matDeleteBtn" onclick="deleteMat()" style="margin-right:auto;display:none">🗑 Supprimer</button>
+      <button class="btn" onclick="closeModal('matModal')">Annuler</button>
+      <button class="btn btn-dark" onclick="saveMat()">✓ Enregistrer</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="prodModal">
   <div class="modal">
     <div class="mhead"><h2>Créer un ordre de production</h2><button class="btn btn-sm" onclick="closeModal('prodModal')">✕</button></div>
@@ -450,6 +494,7 @@ function nav(tab){
   document.getElementById('pageSub').textContent=s;
   const ta=document.getElementById('topbarActions');
   ta.innerHTML=(tab==='produits'||tab==='dashboard')?`<button id="syncBtn" class="btn btn-shopify" onclick="syncShopify()">↻ Sync Shopify</button>`:
+    tab==='matieres'?`<button class="btn btn-dark btn-sm" onclick="openAddMat()">+ Nouvelle matière</button>`:
     tab==='fournisseurs'?`<button class="btn btn-dark btn-sm" onclick="openAddFournisseur()">+ Fournisseur</button>`:
     tab==='ateliers'?`<button class="btn btn-dark btn-sm" onclick="openAddAtelier()">+ Atelier</button>`:'';
   render();
@@ -610,20 +655,20 @@ function rMats(){
         ${thSortM('Valeur','qty')}
       </tr></thead>
       <tbody>
-      ${mats.map(m=>{const al=m.reorder>0&&m.qty<=m.reorder;return`<tr class="${selM.has(m.sku)?'selected':''}">
-        <td><input type="checkbox" ${selM.has(m.sku)?'checked':''} onchange="togM('${m.sku}',this)"></td>
+      ${mats.map(m=>{const al=m.reorder>0&&m.qty<=m.reorder;return`<tr class="${selM.has(m.sku)?'selected':''} clickable" onclick="handleMatClick(event,'${m.sku}')">
+        <td onclick="event.stopPropagation()"><input type="checkbox" ${selM.has(m.sku)?'checked':''} onchange="togM('${m.sku}',this)" onclick="event.stopPropagation()"></td>
         <td style="font-weight:600">${m.name}</td>
         <td class="mono">${m.sku}</td>
         <td><span class="badge bg2">${m.cat}</span></td>
         <td style="font-size:12px">${getSup(m.supplier).emoji} ${getSup(m.supplier).name}</td>
         <td class="mono">${m.cost.toFixed(2)}€</td>
-        <td><div style="display:flex;align-items:center;gap:6px">${al?'<span class="sdot da"></span>':''}<input type="number" value="${m.qty}" min="0" style="width:65px;padding:4px 6px;font-size:12px${al?';border-color:#F5A623':''}" onchange="updMQ('${m.sku}',this.value)" onclick="event.stopPropagation()"></div></td>
+        <td onclick="event.stopPropagation()"><div style="display:flex;align-items:center;gap:6px">${al?'<span class="sdot da"></span>':''}<input type="number" value="${m.qty}" min="0" style="width:65px;padding:4px 6px;font-size:12px${al?';border-color:#F5A623':''}" onchange="updMQ('${m.sku}',this.value)" onclick="event.stopPropagation()"></div></td>
         <td class="mono" style="${al?'color:var(--amber);font-weight:600':''}">${m.reorder>0?m.reorder:'—'}</td>
         <td class="mono">${(m.qty*m.cost).toFixed(2)}€</td>
       </tr>`;}).join('')}
       </tbody>
     </table>
-    <div style="padding:12px 18px;border-top:1px solid rgba(0,0,0,0.1);text-align:right;font-size:12px;color:var(--text2)">Valeur totale : <strong style="color:var(--text)">${S.materials.reduce((s,m)=>s+m.qty*m.cost,0).toFixed(2)}€</strong></div>
+    <div style="padding:10px 18px;font-size:11px;color:var(--text3);border-top:1px solid rgba(0,0,0,0.07)">💡 Cliquez sur une ligne pour modifier la matière · ${S.materials.length} matières au total</div>
   </div>`;
 }
 
@@ -683,7 +728,83 @@ function rPO(){
   ${cl.length>0?`<div style="margin-top:20px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">CLÔTURÉS (${cl.length})</div>${cl.slice().reverse().map(o=>poCard(o,false)).join('')}`:''}`;
 }
 
-// ─── FOURNISSEURS ───────────────────────────────────────────
+// ─── MOT DE PASSE ───────────────────────────────────────────
+const MRP_PWD = 'atelierweaves2026';
+function checkLogin(){
+  const val = document.getElementById('loginPwd').value;
+  if(val === MRP_PWD){
+    localStorage.setItem('aw_mrp_auth','1');
+    document.getElementById('loginScreen').style.display='none';
+  } else {
+    document.getElementById('loginError').style.display='block';
+    document.getElementById('loginPwd').value='';
+  }
+}
+function initAuth(){
+  if(localStorage.getItem('aw_mrp_auth')==='1'){
+    document.getElementById('loginScreen').style.display='none';
+  } else {
+    document.getElementById('loginScreen').style.display='flex';
+  }
+}
+
+// ─── MATIÈRES ADD/EDIT ──────────────────────────────────────
+let editingMatSku = null;
+function openAddMat(){
+  editingMatSku = null;
+  document.getElementById('matModalTitle').textContent = 'Nouvelle matière première';
+  document.getElementById('matDeleteBtn').style.display = 'none';
+  ['matName','matSku','matCost','matQty','matReorder'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('matCat').value = 'Hoodie';
+  const sel = document.getElementById('matSupplier');
+  sel.innerHTML = S.suppliers.map(s => `<option value="${s.id}">${s.emoji} ${s.name}</option>`).join('');
+  document.getElementById('matModal').classList.add('open');
+}
+function openEditMat(sku){
+  const m = S.materials.find(m => m.sku === sku);
+  if(!m) return;
+  editingMatSku = sku;
+  document.getElementById('matModalTitle').textContent = 'Modifier la matière';
+  document.getElementById('matDeleteBtn').style.display = 'inline-flex';
+  document.getElementById('matName').value = m.name;
+  document.getElementById('matSku').value = m.sku;
+  document.getElementById('matCat').value = m.cat;
+  document.getElementById('matCost').value = m.cost;
+  document.getElementById('matQty').value = m.qty;
+  document.getElementById('matReorder').value = m.reorder;
+  const sel = document.getElementById('matSupplier');
+  sel.innerHTML = S.suppliers.map(s => `<option value="${s.id}" ${s.id===m.supplier?'selected':''}>${s.emoji} ${s.name}</option>`).join('');
+  document.getElementById('matModal').classList.add('open');
+}
+function saveMat(){
+  const name = document.getElementById('matName').value.trim();
+  const sku = document.getElementById('matSku').value.trim();
+  if(!name || !sku){ alert('Le nom et le SKU sont obligatoires'); return; }
+  const data = {
+    name, sku,
+    cat: document.getElementById('matCat').value,
+    supplier: document.getElementById('matSupplier').value,
+    cost: parseFloat(document.getElementById('matCost').value) || 0,
+    qty: parseInt(document.getElementById('matQty').value) || 0,
+    reorder: parseInt(document.getElementById('matReorder').value) || 0,
+  };
+  if(editingMatSku){
+    const idx = S.materials.findIndex(m => m.sku === editingMatSku);
+    if(idx >= 0) S.materials[idx] = data;
+  } else {
+    if(S.materials.find(m => m.sku === sku)){ alert('Un SKU identique existe déjà'); return; }
+    S.materials.push(data);
+  }
+  save(); closeModal('matModal'); render();
+}
+function deleteMat(){
+  if(!editingMatSku) return;
+  if(!confirm('Supprimer cette matière ? Cette action est irréversible.')) return;
+  S.materials = S.materials.filter(m => m.sku !== editingMatSku);
+  save(); closeModal('matModal'); render();
+}
+
+
 function rFournisseurs(){
   return`<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">${S.suppliers.map(sup=>{
     const mats=S.materials.filter(m=>m.supplier===sup.id);
@@ -986,11 +1107,17 @@ function saveAtelier(){
 
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 
+function handleMatClick(event, sku){
+  if(event.target.type==='checkbox'||event.target.type==='number') return;
+  openEditMat(sku);
+}
+
 // ─── CLOCK ──────────────────────────────────────────────────
 function updateClock(){const n=new Date();document.getElementById('clock').textContent=n.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'})+' · '+n.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});}
 setInterval(updateClock,1000);updateClock();
 
 // ─── INIT ───────────────────────────────────────────────────
+initAuth();
 nav('dashboard');
 syncShopify();
 setInterval(syncShopify,30*60*1000);
