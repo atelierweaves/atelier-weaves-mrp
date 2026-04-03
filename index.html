@@ -1084,7 +1084,6 @@ function deletePO(id){
 }
 
 // ─── MODAL RÉCEPTION ────────────────────────────────────────
-let curRecId=null;
 function openRecModal(id){
   curRecId=id;const o=S.purchaseOrders.find(o=>o.id===id);if(!o)return;
   const sup=getSup(o.sid);
@@ -1104,7 +1103,6 @@ function confirmReception(){
 }
 
 // ─── MATIÈRES ADD/EDIT ───────────────────────────────────────
-let editingMatSku=null;
 function openAddMat(){
   editingMatSku=null;
   document.getElementById('matModalTitle').textContent='Nouvelle matière première';
@@ -1159,7 +1157,6 @@ function deleteMat(){
 }
 
 // ─── FOURNISSEURS ────────────────────────────────────────────
-let editingSupId=null;
 function openAddSup(){editingSupId=null;document.getElementById('supModalTitle').textContent='Nouveau fournisseur';['supName','supEmoji','supCat','supContact','supDelai','supMoq','supNotes'].forEach(id=>document.getElementById(id).value='');document.getElementById('supModal').classList.add('open');}
 function openEditSup(id){
   editingSupId=id;const sup=getSup(id);
@@ -1176,7 +1173,6 @@ function saveFournisseur(){
 }
 
 // ─── ATELIERS ────────────────────────────────────────────────
-let editingAtelierId=null;
 function openAddAtelier(){editingAtelierId=null;document.getElementById('atelierModalTitle').textContent='Nouvel atelier';['atelierName','atelierEmoji','atelierSpec','atelierContact','atelierDelai','atelierCapa','atelierLoc','atelierNotes'].forEach(id=>document.getElementById(id).value='');document.getElementById('atelierStatus').value='actif';document.getElementById('atelierModal').classList.add('open');}
 function openEditAtelier(id){
   editingAtelierId=id;const a=getAtelier(id);
