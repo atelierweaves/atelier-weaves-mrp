@@ -699,9 +699,9 @@ function rMats(){
         <th class="nosort">Catégorie</th>
         <th class="nosort">Fournisseur</th>
         ${th('Coût','cost',sortMats)}
-        <th class="nosort">Stock</th>
-        <th class="nosort">Seuil</th>
-        ${th('Valeur','qty',sortMats)}
+        ${th('Stock','qty',sortMats)}
+        ${th('Seuil','reorder',sortMats)}
+        <th class="nosort">Valeur</th>
       </tr></thead>
       <tbody>
       ${mats.map(m=>{const al=m.reorder>0&&m.qty<=m.reorder;return`<tr class="${selM.has(m.sku)?'selected':''} clickable" onclick="handleMatClick(event,'${m.sku}')">
