@@ -22,7 +22,7 @@ nav{padding:16px 12px;flex:1;overflow-y:auto}
 .nav-item:hover{background:rgba(255,255,255,0.08);color:#fff}
 .nav-item.active{background:rgba(255,255,255,0.12);color:#fff}
 .nav-icon{width:16px;height:16px;opacity:0.7;flex-shrink:0}
-.nav-item.active .nav-icon{opacity:1}
+.nav-item.active .nav-icon,.nav-item:hover .nav-icon{opacity:1}
 .sidebar-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.1);font-size:11px;color:rgba(255,255,255,0.3);font-family:'DM Mono',monospace}
 .main{overflow:auto}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
@@ -38,18 +38,20 @@ nav{padding:16px 12px;flex:1;overflow-y:auto}
 .card-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
 .card-title{font-size:13px;font-weight:700}
 table{width:100%;border-collapse:collapse;font-size:13px}
-thead th{padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);text-align:left;background:var(--surface2);white-space:nowrap;user-select:none;position:relative}
+thead th{padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);text-align:left;background:var(--surface2);white-space:nowrap;user-select:none}
 thead th.sortable{cursor:pointer}
 thead th.sortable:hover{background:#E5E4DF;color:var(--text2)}
-thead th .sort-icon{margin-left:4px;opacity:0.4;font-size:9px}
-thead th.sort-asc .sort-icon{opacity:1;color:var(--text)}
-thead th.sort-desc .sort-icon{opacity:1;color:var(--text)}
+thead th.sort-asc::after{content:' ▲';font-size:9px;color:var(--text)}
+thead th.sort-desc::after{content:' ▼';font-size:9px;color:var(--text)}
+thead th.nosort{cursor:default}
 tbody td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
 tbody tr:last-child td{border-bottom:none}
 tbody tr:hover td{background:#FAFAF7}
 tbody tr.selected td{background:#EEF5FB}
 tbody tr.clickable{cursor:pointer}
 tbody tr.clickable:hover td{background:#F0F4FF}
+tbody tr.row-negative td{background:#FFF5F5}
+tbody tr.row-negative:hover td{background:#FFE8E8}
 .badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
 .bg{background:#D8F3DC;color:#2D6A4F}.br{background:#FFE8E8;color:#9B2226}.ba{background:#FFF1CC;color:#7B4F12}.bb{background:#D6EAF8;color:#1B4F72}.bg2{background:var(--surface2);color:var(--text2)}.bpu{background:#E8DAEF;color:#4A235A}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;font-size:12px;font-weight:600;border-radius:6px;cursor:pointer;transition:all 0.15s;font-family:'Syne',sans-serif;border:1px solid var(--border2);background:#fff;color:var(--text)}
@@ -59,6 +61,7 @@ tbody tr.clickable:hover td{background:#F0F4FF}
 .btn-xs{padding:3px 8px;font-size:10px}
 .btn-danger{border-color:#FFB3B3;color:var(--red);background:var(--red-bg)}
 .btn-green{background:var(--green-bg);color:var(--green);border-color:#A9DFBF}
+.btn-amber{background:var(--amber-bg);color:var(--amber);border-color:#F9E79F}
 .btn-shopify{background:#96BF48;color:#fff;border-color:#96BF48}.btn-shopify:hover{background:#7da33a}
 .btn-purple{background:var(--purple-bg);color:var(--purple);border-color:#D2B4DE}
 input[type="text"],input[type="date"],input[type="number"],select,textarea{padding:8px 12px;font-size:13px;border:1px solid var(--border2);border-radius:6px;background:#fff;color:var(--text);font-family:'Syne',sans-serif;width:100%;outline:none}
@@ -69,52 +72,50 @@ input[type="checkbox"]{width:15px;height:15px;cursor:pointer;accent-color:var(--
 .sdot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:7px;flex-shrink:0}
 .dg{background:#40B97A}.da{background:#F5A623}.dr{background:#E85858}.db{background:#4A90D9}.dgr{background:#B0B0A8}.dpu{background:#8E44AD}
 .mono{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)}
-.selbar{display:none;align-items:center;justify-content:space-between;background:var(--blue-bg);border:1px solid #A9CCE3;border-radius:6px;padding:10px 16px;margin-bottom:16px;font-size:13px;color:var(--blue);font-weight:600}
+.selbar{display:none;align-items:center;justify-content:space-between;background:var(--blue-bg);border:1px solid #A9CCE3;border-radius:6px;padding:10px 16px;margin-bottom:16px;font-size:13px;color:var(--blue);font-weight:600;flex-wrap:wrap;gap:8px}
 .selbar.show{display:flex}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;align-items:center;justify-content:center}
 .overlay.open{display:flex}
-.modal{background:#fff;border-radius:10px;width:620px;max-width:95vw;max-height:90vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,0.25)}
-.modal-lg{width:720px}
+.modal{background:#fff;border-radius:10px;width:620px;max-width:96vw;max-height:90vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,0.25)}
+.modal-lg{width:740px}
 .mhead{padding:20px 22px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .mhead h2{font-size:15px;font-weight:700}
 .mbody{padding:20px 22px}
-.mfoot{padding:16px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.mfoot{padding:16px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;align-items:center}
 .frow{margin-bottom:14px}
 .frow label{display:block;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text2);margin-bottom:6px}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.recipe-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)}
-.recipe-row:last-child{border-bottom:none}
-.recipe-mat{flex:1;font-size:13px;font-weight:600}
-.recipe-qty{width:70px}
-.ocard{border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:12px}
-.ochead{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
-.oid{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--text2)}
-.ometa{font-size:11px;color:var(--text3);margin-top:3px;font-family:'DM Mono',monospace}
 .arow{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border)}
 .arow:last-child{border-bottom:none}
 .empty{text-align:center;padding:48px 24px;color:var(--text3)}
 .empty-icon{font-size:32px;margin-bottom:12px}
 .empty-text{font-size:14px;font-weight:600;margin-bottom:4px;color:var(--text2)}
 .empty-sub{font-size:12px}
-.supcard,.atelier-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px}
+.ocard{border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:12px}
+.ocard-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.oid{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--text2)}
+.ometa{font-size:11px;color:var(--text3);margin-top:3px;font-family:'DM Mono',monospace}
 .sync-banner{background:var(--text);color:#fff;border-radius:10px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
 .sync-info{font-size:12px;color:rgba(255,255,255,0.5);margin-top:3px;font-family:'DM Mono',monospace}
-.edit-field{border:1px solid var(--border2);border-radius:4px;padding:4px 8px;font-size:12px;font-family:'Syne',sans-serif;background:#fff;color:var(--text);outline:none;width:100%}
-.edit-field:focus{border-color:var(--text)}
+.supcard,.atelier-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:14px}
+.info-tip{background:#F0F4FF;border:1px solid #A9CCE3;border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--blue)}
+.alert-banner{background:var(--red-bg);border:1px solid #FFB3B3;border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--red);font-weight:600}
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 </style>
 </head>
 <body>
-<!-- ÉCRAN DE CONNEXION -->
+
+<!-- LOGIN -->
 <div id="loginScreen" style="display:none;position:fixed;inset:0;background:var(--text);z-index:999;align-items:center;justify-content:center;flex-direction:column">
   <div style="text-align:center;margin-bottom:40px">
     <div style="font-size:13px;font-weight:700;letter-spacing:0.2em;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:8px">Atelier Weaves</div>
-    <div style="font-size:32px;font-weight:700;color:#fff;letter-spacing:-0.02em">MRP</div>
+    <div style="font-size:36px;font-weight:700;color:#fff;letter-spacing:-0.02em">MRP</div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.3);margin-top:6px;font-family:'DM Mono',monospace">v3.3 · Espace privé</div>
   </div>
   <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:28px;width:320px">
     <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:16px;text-align:center">Entrez le mot de passe pour accéder</div>
-    <input type="password" id="loginPwd" placeholder="Mot de passe" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:10px 14px;font-size:14px;width:100%;margin-bottom:12px" onkeydown="if(event.key==='Enter')checkLogin()">
+    <input type="password" id="loginPwd" placeholder="Mot de passe" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:6px;padding:10px 14px;font-size:14px;width:100%;margin-bottom:12px;font-family:'Syne',sans-serif" onkeydown="if(event.key==='Enter')checkLogin()">
     <button onclick="checkLogin()" style="width:100%;padding:10px;background:#fff;color:var(--text);border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif">Accéder au MRP →</button>
     <div id="loginError" style="color:#FF6B6B;font-size:12px;text-align:center;margin-top:10px;display:none">Mot de passe incorrect</div>
   </div>
@@ -125,7 +126,7 @@ input[type="checkbox"]{width:15px;height:15px;cursor:pointer;accent-color:var(--
   <div class="logo">
     <div class="logo-mark">Atelier Weaves</div>
     <div class="logo-name">MRP</div>
-    <div class="logo-sub">v3.1 · 2026</div>
+    <div class="logo-sub">v3.3 · 2026</div>
   </div>
   <nav>
     <div class="nav-label">Vue générale</div>
@@ -134,6 +135,10 @@ input[type="checkbox"]{width:15px;height:15px;cursor:pointer;accent-color:var(--
       Tableau de bord
     </div>
     <div class="nav-label">Inventaire</div>
+    <div class="nav-item" onclick="nav('commandes')">
+      <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/></svg>
+      Commandes Shopify
+    </div>
     <div class="nav-item" onclick="nav('produits')">
       <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/></svg>
       Produits finis
@@ -158,7 +163,7 @@ input[type="checkbox"]{width:15px;height:15px;cursor:pointer;accent-color:var(--
     </div>
     <div class="nav-item" onclick="nav('ateliers')">
       <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/><path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"/></svg>
-      Ateliers de production
+      Ateliers
     </div>
   </nav>
   <div class="sidebar-footer" id="clock">—</div>
@@ -173,91 +178,52 @@ input[type="checkbox"]{width:15px;height:15px;cursor:pointer;accent-color:var(--
 </main>
 </div>
 
-<!-- MODAL MATIÈRE PREMIÈRE ADD/EDIT -->
-<div class="overlay" id="matModal">
-  <div class="modal">
-    <div class="mhead"><h2 id="matModalTitle">Matière première</h2><button class="btn btn-sm" onclick="closeModal('matModal')">✕</button></div>
-    <div class="mbody">
-      <div class="fgrid">
-        <div class="frow" style="grid-column:1/-1"><label>Nom</label><input type="text" id="matName" placeholder="ex: Drummer 2.0 - Noir S"></div>
-        <div class="frow"><label>SKU</label><input type="text" id="matSku" placeholder="ex: MAT-HOO-BLA-S"></div>
-        <div class="frow"><label>Catégorie</label>
-          <select id="matCat">
-            <option value="Hoodie">Hoodie</option>
-            <option value="Tapisserie">Tapisserie</option>
-            <option value="Label">Label</option>
-            <option value="Packaging">Packaging</option>
-            <option value="Autre">Autre</option>
-          </select>
-        </div>
-        <div class="frow"><label>Fournisseur</label><select id="matSupplier"></select></div>
-        <div class="frow"><label>Coût unitaire (€)</label><input type="number" id="matCost" placeholder="ex: 14.96" step="0.01" min="0"></div>
-        <div class="frow"><label>Stock actuel</label><input type="number" id="matQty" placeholder="ex: 10" min="0"></div>
-        <div class="frow"><label>Seuil d'alerte</label><input type="number" id="matReorder" placeholder="ex: 3" min="0"></div>
-      </div>
-    </div>
-    <div class="mfoot">
-      <button class="btn btn-danger btn-sm" id="matDeleteBtn" onclick="deleteMat()" style="margin-right:auto;display:none">🗑 Supprimer</button>
-      <button class="btn" onclick="closeModal('matModal')">Annuler</button>
-      <button class="btn btn-dark" onclick="saveMat()">✓ Enregistrer</button>
-    </div>
-  </div>
-</div>
-
-<div class="overlay" id="prodModal">
-  <div class="modal">
-    <div class="mhead"><h2>Créer un ordre de production</h2><button class="btn btn-sm" onclick="closeModal('prodModal')">✕</button></div>
-    <div class="mbody">
-      <div id="prodItems"></div>
-      <div class="frow" style="margin-top:16px"><label>Date de récupération chez l'atelier</label><input type="date" id="prodDate"></div>
-      <div class="frow"><label>Atelier</label><select id="prodAtelier"></select></div>
-      <div class="frow"><label>Note</label><input type="text" id="prodNote" placeholder="ex: priorité, attention taille..."></div>
-      <div id="prodBom" style="margin-top:16px"></div>
-    </div>
-    <div class="mfoot"><button class="btn" onclick="closeModal('prodModal')">Annuler</button><button class="btn btn-dark" onclick="confirmProduction()">✓ Confirmer</button></div>
-  </div>
-</div>
-
-<!-- MODAL RECETTE PRODUIT -->
+<!-- MODAL RECETTE -->
 <div class="overlay" id="recetteModal">
   <div class="modal modal-lg">
-    <div class="mhead">
-      <div>
-        <h2 id="recetteTitle">Recette</h2>
-        <div class="mono" id="recetteSku" style="margin-top:4px"></div>
-      </div>
-      <button class="btn btn-sm" onclick="closeModal('recetteModal')">✕</button>
-    </div>
+    <div class="mhead"><div><h2 id="recetteTitle">Recette</h2><div class="mono" id="recetteSku" style="margin-top:4px"></div></div><button class="btn btn-sm" onclick="closeModal('recetteModal')">✕</button></div>
     <div class="mbody">
       <div id="recetteRows"></div>
       <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
         <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">Ajouter une matière</div>
         <div style="display:flex;gap:8px;align-items:center">
-          <select id="addMatSku" style="flex:1">
-            <option value="">— Choisir une matière —</option>
-          </select>
-          <input type="number" id="addMatQty" value="1" min="1" style="width:80px">
+          <select id="addMatSku" style="flex:1"><option value="">— Choisir —</option></select>
+          <input type="number" id="addMatQty" value="1" min="0.1" step="0.1" style="width:80px">
           <button class="btn btn-green btn-sm" onclick="addToRecette()">+ Ajouter</button>
         </div>
       </div>
     </div>
-    <div class="mfoot">
-      <button class="btn" onclick="closeModal('recetteModal')">Fermer</button>
-      <button class="btn btn-dark" onclick="saveRecette()">✓ Enregistrer la recette</button>
-    </div>
+    <div class="mfoot"><button class="btn" onclick="closeModal('recetteModal')">Fermer</button><button class="btn btn-dark" onclick="saveRecette()">✓ Enregistrer la recette</button></div>
   </div>
 </div>
 
-<!-- MODAL PO -->
+<!-- MODAL PRODUCTION CRÉER/ÉDITER -->
+<div class="overlay" id="prodModal">
+  <div class="modal">
+    <div class="mhead"><h2 id="prodModalTitle">Créer un ordre de production</h2><button class="btn btn-sm" onclick="closeModal('prodModal')">✕</button></div>
+    <div class="mbody">
+      <div id="prodItems"></div>
+      <div class="fgrid" style="margin-top:16px">
+        <div class="frow"><label>Date de récupération</label><input type="date" id="prodDate"></div>
+        <div class="frow"><label>Atelier</label><select id="prodAtelier"></select></div>
+      </div>
+      <div class="frow"><label>Note</label><input type="text" id="prodNote" placeholder="ex: priorité, attention taille..."></div>
+      <div id="prodBom" style="margin-top:16px"></div>
+    </div>
+    <div class="mfoot"><button class="btn" onclick="closeModal('prodModal')">Annuler</button><button class="btn btn-dark" onclick="saveProd()">✓ Confirmer</button></div>
+  </div>
+</div>
+
+<!-- MODAL PO CRÉER/ÉDITER -->
 <div class="overlay" id="poModal">
   <div class="modal">
-    <div class="mhead"><h2>Créer des Purchase Orders</h2><button class="btn btn-sm" onclick="closeModal('poModal')">✕</button></div>
+    <div class="mhead"><h2 id="poModalTitle">Créer des Purchase Orders</h2><button class="btn btn-sm" onclick="closeModal('poModal')">✕</button></div>
     <div class="mbody" id="poModalBody"></div>
-    <div class="mfoot"><button class="btn" onclick="closeModal('poModal')">Annuler</button><button class="btn btn-dark" onclick="confirmPO()">✓ Confirmer</button></div>
+    <div class="mfoot"><button class="btn" onclick="closeModal('poModal')">Annuler</button><button class="btn btn-dark" onclick="savePO()">✓ Confirmer</button></div>
   </div>
 </div>
 
-<!-- MODAL RÉCEPTION -->
+<!-- MODAL RÉCEPTION PO -->
 <div class="overlay" id="recModal">
   <div class="modal">
     <div class="mhead"><h2>Réceptionner la commande</h2><button class="btn btn-sm" onclick="closeModal('recModal')">✕</button></div>
@@ -266,65 +232,82 @@ input[type="checkbox"]{width:15px;height:15px;cursor:pointer;accent-color:var(--
   </div>
 </div>
 
-<!-- MODAL FOURNISSEUR EDIT/ADD -->
+<!-- MODAL MATIÈRE ADD/EDIT -->
+<div class="overlay" id="matModal">
+  <div class="modal">
+    <div class="mhead"><h2 id="matModalTitle">Matière première</h2><button class="btn btn-sm" onclick="closeModal('matModal')">✕</button></div>
+    <div class="mbody">
+      <div class="fgrid">
+        <div class="frow" style="grid-column:1/-1"><label>Nom</label><input type="text" id="matName" placeholder="ex: Drummer 2.0 - Noir S"></div>
+        <div class="frow"><label>SKU</label><input type="text" id="matSku" placeholder="ex: MAT-HOO-BLA-S"></div>
+        <div class="frow"><label>Catégorie</label><select id="matCat"><option>Hoodie</option><option>Tapisserie</option><option>Label</option><option>Packaging</option><option>Autre</option></select></div>
+        <div class="frow"><label>Fournisseur</label><select id="matSupplier"></select></div>
+        <div class="frow"><label>Coût unitaire (€)</label><input type="number" id="matCost" step="0.01" min="0"></div>
+        <div class="frow"><label>Stock actuel</label><input type="number" id="matQty" min="0"></div>
+        <div class="frow"><label>Seuil d'alerte</label><input type="number" id="matReorder" min="0"></div>
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-danger btn-sm" id="matDeleteBtn" onclick="deleteMat()" style="display:none;margin-right:auto">🗑 Supprimer</button>
+      <button class="btn btn-purple btn-sm" id="matDuplicateBtn" onclick="duplicateMat()" style="display:none">⧉ Dupliquer</button>
+      <button class="btn" onclick="closeModal('matModal')">Annuler</button>
+      <button class="btn btn-dark" onclick="saveMat()">✓ Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FOURNISSEUR -->
 <div class="overlay" id="supModal">
   <div class="modal">
     <div class="mhead"><h2 id="supModalTitle">Fournisseur</h2><button class="btn btn-sm" onclick="closeModal('supModal')">✕</button></div>
     <div class="mbody">
       <div class="fgrid">
-        <div class="frow"><label>Nom</label><input type="text" id="supName" placeholder="ex: Stanley Stella"></div>
-        <div class="frow"><label>Emoji</label><input type="text" id="supEmoji" placeholder="ex: 👕" style="width:80px"></div>
-        <div class="frow"><label>Catégorie</label><input type="text" id="supCat" placeholder="ex: Hoodies & Vêtements"></div>
-        <div class="frow"><label>Contact</label><input type="text" id="supContact" placeholder="ex: orders@stanley.com"></div>
-        <div class="frow"><label>Délai habituel</label><input type="text" id="supDelai" placeholder="ex: 7-10 jours"></div>
-        <div class="frow"><label>MOQ</label><input type="text" id="supMoq" placeholder="ex: Par pièce"></div>
+        <div class="frow"><label>Nom</label><input type="text" id="supName"></div>
+        <div class="frow"><label>Emoji</label><input type="text" id="supEmoji" style="width:80px"></div>
+        <div class="frow"><label>Catégorie</label><input type="text" id="supCat"></div>
+        <div class="frow"><label>Contact</label><input type="text" id="supContact"></div>
+        <div class="frow"><label>Délai habituel</label><input type="text" id="supDelai"></div>
+        <div class="frow"><label>MOQ</label><input type="text" id="supMoq"></div>
       </div>
-      <div class="frow"><label>Notes</label><textarea id="supNotes" rows="2" placeholder="Notes internes..."></textarea></div>
+      <div class="frow"><label>Notes</label><textarea id="supNotes" rows="2"></textarea></div>
     </div>
     <div class="mfoot"><button class="btn" onclick="closeModal('supModal')">Annuler</button><button class="btn btn-dark" onclick="saveFournisseur()">✓ Enregistrer</button></div>
   </div>
 </div>
 
-<!-- MODAL ATELIER EDIT/ADD -->
+<!-- MODAL ATELIER -->
 <div class="overlay" id="atelierModal">
   <div class="modal">
-    <div class="mhead"><h2 id="atelierModalTitle">Atelier de production</h2><button class="btn btn-sm" onclick="closeModal('atelierModal')">✕</button></div>
+    <div class="mhead"><h2 id="atelierModalTitle">Atelier</h2><button class="btn btn-sm" onclick="closeModal('atelierModal')">✕</button></div>
     <div class="mbody">
       <div class="fgrid">
-        <div class="frow"><label>Nom</label><input type="text" id="atelierName" placeholder="ex: Mélanie"></div>
-        <div class="frow"><label>Emoji</label><input type="text" id="atelierEmoji" placeholder="ex: ✂️" style="width:80px"></div>
-        <div class="frow"><label>Spécialité</label><input type="text" id="atelierSpec" placeholder="ex: Assemblage hoodies tapisserie"></div>
-        <div class="frow"><label>Contact</label><input type="text" id="atelierContact" placeholder="ex: 06 12 34 56 78"></div>
-        <div class="frow"><label>Délai habituel</label><input type="text" id="atelierDelai" placeholder="ex: 3-5 jours"></div>
-        <div class="frow"><label>Capacité / semaine</label><input type="text" id="atelierCapa" placeholder="ex: 20 pièces"></div>
-        <div class="frow"><label>Localisation</label><input type="text" id="atelierLoc" placeholder="ex: Paris 11e"></div>
-        <div class="frow"><label>Statut</label>
-          <select id="atelierStatus">
-            <option value="actif">Actif</option>
-            <option value="pause">En pause</option>
-            <option value="inactif">Inactif</option>
-          </select>
-        </div>
+        <div class="frow"><label>Nom</label><input type="text" id="atelierName"></div>
+        <div class="frow"><label>Emoji</label><input type="text" id="atelierEmoji"></div>
+        <div class="frow"><label>Spécialité</label><input type="text" id="atelierSpec"></div>
+        <div class="frow"><label>Contact</label><input type="text" id="atelierContact"></div>
+        <div class="frow"><label>Délai habituel</label><input type="text" id="atelierDelai"></div>
+        <div class="frow"><label>Capacité / semaine</label><input type="text" id="atelierCapa"></div>
+        <div class="frow"><label>Localisation</label><input type="text" id="atelierLoc"></div>
+        <div class="frow"><label>Statut</label><select id="atelierStatus"><option value="actif">Actif</option><option value="pause">En pause</option><option value="inactif">Inactif</option></select></div>
       </div>
-      <div class="frow"><label>Notes</label><textarea id="atelierNotes" rows="2" placeholder="Notes internes, conditions, tarifs..."></textarea></div>
+      <div class="frow"><label>Notes</label><textarea id="atelierNotes" rows="2"></textarea></div>
     </div>
     <div class="mfoot"><button class="btn" onclick="closeModal('atelierModal')">Annuler</button><button class="btn btn-dark" onclick="saveAtelier()">✓ Enregistrer</button></div>
   </div>
 </div>
 
 <script>
-// ─── DONNÉES INITIALES ──────────────────────────────────────
+// ─── CONSTANTES ─────────────────────────────────────────────
+const MRP_PWD='atelierweaves2026';
 const INIT_SUPPLIERS=[
   {id:"stanley-stella",name:"Stanley Stella",cat:"Hoodies & Vêtements",emoji:"👕",contact:"orders@stanleystella.com",delai:"7-10 jours",moq:"Par pièce",notes:"",color:"#D6EAF8"},
   {id:"pure-country",name:"Pure Country",cat:"Tapisseries & Manches",emoji:"🧵",contact:"—",delai:"14-21 jours",moq:"Slots de 8 manches",notes:"Commander par slots de 8",color:"#D8F3DC"},
   {id:"jbt-industry",name:"JBT Industry",cat:"Étiquettes",emoji:"🏷️",contact:"—",delai:"10-15 jours",moq:"Par lot",notes:"",color:"#FFF1CC"},
   {id:"alibaba",name:"Alibaba",cat:"Packaging",emoji:"📦",contact:"—",delai:"15-30 jours",moq:"Variable",notes:"",color:"#E8DAEF"},
 ];
-
 const INIT_ATELIERS=[
-  {id:"melanie",name:"Mélanie",emoji:"✂️",spec:"Assemblage hoodies tapisserie",contact:"—",delai:"3-5 jours",capa:"15-20 pièces/semaine",loc:"—",status:"actif",notes:"Notre couturière principale. Démonte les manches originales et coud les manches tapisserie."},
+  {id:"melanie",name:"Mélanie",emoji:"✂️",spec:"Assemblage hoodies tapisserie",contact:"—",delai:"3-5 jours",capa:"15-20 pièces/semaine",loc:"—",status:"actif",notes:"Couturière principale. Démonte les manches originales et coud les manches tapisserie."},
 ];
-
 const INIT_MATS=[
   {name:"Drummer 2.0 - Noir S",sku:"MAT-HOO-BLA-S",qty:8,cat:"Hoodie",supplier:"stanley-stella",cost:14.96,reorder:3},
   {name:"Drummer 2.0 - Noir M",sku:"MAT-HOO-BLA-M",qty:5,cat:"Hoodie",supplier:"stanley-stella",cost:14.96,reorder:3},
@@ -369,25 +352,38 @@ const INIT_MATS=[
 
 // ─── STATE ──────────────────────────────────────────────────
 function loadState(){
-  try{const s=localStorage.getItem('aw_mrp_v31');if(s)return JSON.parse(s);}catch(e){}
-  return{products:[],materials:INIT_MATS.map(m=>({...m})),productions:[],purchaseOrders:[],suppliers:INIT_SUPPLIERS.map(s=>({...s})),ateliers:INIT_ATELIERS.map(a=>({...a})),recipes:{},pc:1,poc:1,lastSync:null};
+  try{const s=localStorage.getItem('aw_mrp_v33');if(s)return JSON.parse(s);}catch(e){}
+  return{products:[],materials:INIT_MATS.map(m=>({...m})),productions:[],purchaseOrders:[],suppliers:INIT_SUPPLIERS.map(s=>({...s})),ateliers:INIT_ATELIERS.map(a=>({...a})),recipes:{},shopifyOrders:[],pc:1,poc:1,lastSync:null,lastOrderSync:null};
 }
-function save(){localStorage.setItem('aw_mrp_v31',JSON.stringify(S));}
+function save(){try{localStorage.setItem('aw_mrp_v33',JSON.stringify(S));}catch(e){}}
 let S=loadState();
 let selP=new Set(),selM=new Set(),curRecId=null,curTab='dashboard';
-let editingSupId=null,editingAtelierId=null,editingRecetteSku=null;
+let editingSupId=null,editingAtelierId=null,editingMatSku=null,editingRecetteSku=null;
+let editingProdId=null,editingPoId=null;
 let sortProds={col:null,dir:1},sortMats={col:null,dir:1};
+let currentRecette=[];
+let pendingMissingMats=[];
 
 // ─── HELPERS ────────────────────────────────────────────────
 function getSup(id){return S.suppliers.find(s=>s.id===id)||{name:id,emoji:'🏭',color:'#eee',delai:'—',moq:'—',notes:'',cat:'—',contact:'—'};}
 function getAtelier(id){return S.ateliers.find(a=>a.id===id)||{name:id,emoji:'✂️'};}
-function getMat(sku){return S.materials.find(m=>m.sku===sku)||{name:sku,cost:0,supplier:''};}
+function getMat(sku){return S.materials.find(m=>m.sku===sku)||{name:sku,cost:0,supplier:'',qty:0};}
 function getQty(sku){const m=S.materials.find(m=>m.sku===sku);return m?m.qty:0;}
+function today(){return new Date().toISOString().split('T')[0];}
+function fd(d){if(!d||d==='—')return'—';try{const[y,m,day]=d.split('-');return`${day}/${m}/${y}`;}catch(e){return d;}}
+function poSB(s){if(s==='Envoyé au fournisseur')return'bb';if(s==='Réceptionné partiellement')return'ba';if(s==='Clôturé')return'bg';return'bg2';}
+function prSB(s){if(s==='En production')return'ba';if(s==='Terminé — prêt à expédier')return'bg';if(s==='Matériaux reçus')return'bb';return'bg2';}
+function scBadge(s){if(s==='actif')return'bg';if(s==='pause')return'ba';return'bg2';}
 
 function getRecipe(psku){
-  // Recette custom si elle existe
-  if(S.recipes[psku])return S.recipes[psku];
-  // Sinon recette auto basée sur le SKU
+  if(S.recipes[psku]){
+    const r=[...S.recipes[psku]];
+    if(!r.find(x=>x.sku==='MAT-PACK'))r.push({sku:'MAT-PACK',qty:1});
+    if(!r.find(x=>x.sku==='MAT-LAB-BRAND'))r.push({sku:'MAT-LAB-BRAND',qty:1});
+    if(!r.find(x=>x.sku==='MAT-LAB-COMPO'))r.push({sku:'MAT-LAB-COMPO',qty:1});
+    if(!r.find(x=>x.sku==='MAT-LAB-NECK'))r.push({sku:'MAT-LAB-NECK',qty:1});
+    return r;
+  }
   const parts=psku.split('-');
   if(parts.length<6)return[];
   const color=parts[2],size=parts[4],design=parts[5];
@@ -400,53 +396,58 @@ function getRecipe(psku){
   return recipe;
 }
 
-function canMake(psku){
-  const recipe=getRecipe(psku);
-  if(!recipe.length)return'?';
-  for(const r of recipe){if(getQty(r.sku)<r.qty)return'no';}
-  return'ok';
+function checkMissingMats(items){
+  const needed={};
+  items.forEach(p=>{getRecipe(p.sku).forEach(r=>{needed[r.sku]=(needed[r.sku]||0)+r.qty*Math.abs(p.stockMRP||0||1);});});
+  const missing=[];
+  Object.entries(needed).forEach(([sku,qty])=>{const av=getQty(sku);if(av<qty)missing.push({sku,needed:qty,available:av,gap:qty-av});});
+  return missing;
 }
 
-function today(){return new Date().toISOString().split('T')[0];}
-function fd(d){if(!d||d==='—')return'—';try{const[y,m,day]=d.split('-');return`${day}/${m}/${y}`;}catch(e){return d;}}
-function poSB(s){if(s==='Envoyé au fournisseur')return'bb';if(s==='Réceptionné partiellement')return'ba';if(s==='Clôturé')return'bg';return'bg2';}
-function prSB(s){if(s==='En production')return'ba';if(s==='Terminé — prêt à expédier')return'bg';if(s==='Matériaux reçus')return'bb';return'bg2';}
-function statusColor(s){if(s==='actif')return'bg';if(s==='pause')return'ba';return'bg2';}
+// ─── TRI ────────────────────────────────────────────────────
+function sortBy(arr,col,dir){
+  return[...arr].sort((a,b)=>{let va=a[col]??'',vb=b[col]??'';if(typeof va==='number'&&typeof vb==='number')return(va-vb)*dir;return String(va).localeCompare(String(vb),'fr')*dir;});
+}
+function toggleSort(state,col){if(state.col===col)state.dir*=-1;else{state.col=col;state.dir=1;}render();}
+function th(label,col,state){const d=state.col===col?(state.dir===1?'sort-asc':'sort-desc'):'';return`<th class="sortable ${d}" onclick="toggleSort(${state===sortProds?'sortProds':'sortMats'},'${col}')">${label}</th>`;}
 
-// ─── SHOPIFY SYNC (avec pagination) ─────────────────────────
+// ─── AUTH ────────────────────────────────────────────────────
+function checkLogin(){
+  if(document.getElementById('loginPwd').value===MRP_PWD){
+    localStorage.setItem('aw_auth','1');
+    document.getElementById('loginScreen').style.display='none';
+  }else{document.getElementById('loginError').style.display='block';document.getElementById('loginPwd').value='';}
+}
+function initAuth(){
+  if(localStorage.getItem('aw_auth')!=='1'){document.getElementById('loginScreen').style.display='flex';}
+  else{document.getElementById('loginScreen').style.display='none';}
+}
+
+// ─── SHOPIFY SYNC ────────────────────────────────────────────
 async function syncShopify(){
   const btn=document.getElementById('syncBtn');
   if(btn){btn.textContent='⏳ Synchro...';btn.disabled=true;}
   try{
-    let allProducts=[];
-    // Page 1
     const res=await fetch('/api/shopify?endpoint=products');
     const data=await res.json();
-    if(data.products){allProducts=[...data.products];}
-    // Page 2 si nécessaire
-    if(data.products&&data.products.length===250){
-      const res2=await fetch('/api/shopify?endpoint=products2');
-      const data2=await res2.json();
-      if(data2.products)allProducts=[...allProducts,...data2.products];
-    }
+    if(!data.products){if(btn){btn.textContent='✕ Erreur';btn.disabled=false;}return;}
     const colorMap={'BLA':'Noir','BLU':'Marine','BOR':'Bordeaux','BEI':'Beige','GRA':'Gris','PIN':'Rose','RED':'Rouge','KAK':'Kaki','WHI':'Blanc','MUL':'Multicolore'};
     const typeMap={'HOO':'Hoodie','ZIP':'Veste zippée','CRE':'Crewneck','JAC':'Jacket','PAN':'Pantalon','TSH':'T-Shirt','BOM':'Bomber'};
     const newProds=[];
-    for(const prod of allProducts){
+    for(const prod of data.products){
       if(prod.title==='Carte-cadeau ATELIER WEAVES')continue;
       for(const v of prod.variants){
         if(!v.sku)continue;
-        const parts=v.sku.split('-');
-        if(parts.length<5)continue;
+        const parts=v.sku.split('-');if(parts.length<5)continue;
         const color=parts[2],type=parts[1],design=parts[5]||'';
-        const isCustom=design==='CUSTOMSLEEVE';
+        const existing=S.products.find(p=>p.sku===v.sku);
         newProds.push({
-          name:`${prod.title} - ${v.title}`,
-          sku:v.sku,price:parseFloat(v.price),active:prod.status==='active',
-          type:isCustom?'custom':'best-seller',design,
-          color:colorMap[color]||color,
-          size:v.title.split(' / ')[0]||v.title,
+          name:`${prod.title} - ${v.title}`,sku:v.sku,
+          price:parseFloat(v.price),active:prod.status==='active',
+          type:design==='CUSTOMSLEEVE'?'custom':'best-seller',design,
+          color:colorMap[color]||color,size:v.title.split(' / ')[0]||v.title,
           stock:Math.max(0,v.inventory_quantity||0),
+          stockMRP:existing?.stockMRP??0,
           shopifyId:v.id,productType:typeMap[type]||type,
         });
       }
@@ -455,67 +456,75 @@ async function syncShopify(){
     if(btn){btn.textContent='✓ Synchronisé';btn.style.background='#2D6A4F';}
     setTimeout(()=>{if(btn){btn.textContent='↻ Sync Shopify';btn.disabled=false;btn.style.background='';}render();},2000);
     render();
-  }catch(e){
-    if(btn){btn.textContent='✕ Erreur';btn.disabled=false;}
-  }
+    // Sync commandes en parallèle
+    syncOrders();
+  }catch(e){if(btn){btn.textContent='✕ Erreur';btn.disabled=false;}}
 }
 
-// ─── TRI COLONNES ───────────────────────────────────────────
-function sortBy(arr,col,dir){
-  return [...arr].sort((a,b)=>{
-    let va=a[col]??'',vb=b[col]??'';
-    if(typeof va==='number'&&typeof vb==='number')return(va-vb)*dir;
-    return String(va).localeCompare(String(vb),'fr')*dir;
-  });
-}
-function toggleSort(state,col){
-  if(state.col===col)state.dir*=-1;
-  else{state.col=col;state.dir=1;}
-  render();
-}
-function thSort(label,col,state){
-  const icon=state.col===col?(state.dir===1?'▲':'▼'):'⇅';
-  const cls=state.col===col?(state.dir===1?'sort-asc':'sort-desc'):'';
-  return`<th class="sortable ${cls}" onclick="toggleSort(sortProds,'${col}')"><span>${label}</span> <span class="sort-icon">${icon}</span></th>`;
-}
-function thSortM(label,col){
-  const icon=sortMats.col===col?(sortMats.dir===1?'▲':'▼'):'⇅';
-  const cls=sortMats.col===col?(sortMats.dir===1?'sort-asc':'sort-desc'):'';
-  return`<th class="sortable ${cls}" onclick="toggleSort(sortMats,'${col}')"><span>${label}</span> <span class="sort-icon">${icon}</span></th>`;
+async function syncOrders(){
+  try{
+    const res=await fetch('/api/shopify?endpoint=orders');
+    const data=await res.json();
+    if(data.orders){
+      // Déduire le stock MRP des nouvelles commandes
+      const knownIds=new Set((S.shopifyOrders||[]).map(o=>o.id));
+      const newOrders=data.orders.filter(o=>!knownIds.has(o.id));
+      for(const order of newOrders){
+        for(const item of (order.line_items||[])){
+          const p=S.products.find(p=>p.sku===item.sku||p.name.toLowerCase().includes(item.title?.toLowerCase()||''));
+          if(p)p.stockMRP=(p.stockMRP||0)-item.quantity;
+        }
+      }
+      S.shopifyOrders=data.orders;
+      S.lastOrderSync=new Date().toISOString();
+      save();render();
+    }
+  }catch(e){}
 }
 
-// ─── NAVIGATION ─────────────────────────────────────────────
-const PAGES={dashboard:['Tableau de bord',"Vue d'ensemble · Atelier Weaves"],produits:['Produits finis','Cliquez sur une ligne pour voir/modifier la recette'],matieres:['Matières premières','Inventaire composantes'],production:['Production','Ordres envoyés aux ateliers'],po:['Purchase Orders','Commandes fournisseurs'],fournisseurs:['Fournisseurs','Répertoire & modification'],ateliers:['Ateliers de production','Répertoire Mélanie & autres']};
+// ─── NAV ─────────────────────────────────────────────────────
+const PAGES={
+  dashboard:['Tableau de bord',"Vue d'ensemble · Atelier Weaves"],
+  commandes:['Commandes Shopify','Toutes les commandes en temps réel'],
+  produits:['Produits finis','Stock Shopify & Stock MRP · Cliquez pour voir la recette'],
+  matieres:['Matières premières','Inventaire composantes · Cliquez pour modifier'],
+  production:['Production','Ordres envoyés aux ateliers'],
+  po:['Purchase Orders','Commandes fournisseurs'],
+  fournisseurs:['Fournisseurs','Répertoire & modification'],
+  ateliers:['Ateliers de production','Répertoire'],
+};
 function nav(tab){
   curTab=tab;selP.clear();selM.clear();
-  document.querySelectorAll('.nav-item').forEach((el,i)=>{el.classList.toggle('active',['dashboard','produits','matieres','production','po','fournisseurs','ateliers'][i]===tab);});
+  document.querySelectorAll('.nav-item').forEach((el,i)=>{el.classList.toggle('active',['dashboard','commandes','produits','matieres','production','po','fournisseurs','ateliers'][i]===tab);});
   const[t,s]=PAGES[tab];
   document.getElementById('pageTitle').textContent=t;
   document.getElementById('pageSub').textContent=s;
   const ta=document.getElementById('topbarActions');
-  ta.innerHTML=(tab==='produits'||tab==='dashboard')?`<button id="syncBtn" class="btn btn-shopify" onclick="syncShopify()">↻ Sync Shopify</button>`:
+  ta.innerHTML=
+    (tab==='produits'||tab==='dashboard'||tab==='commandes')?`<button id="syncBtn" class="btn btn-shopify" onclick="syncShopify()">↻ Sync Shopify</button>`:
     tab==='matieres'?`<button class="btn btn-dark btn-sm" onclick="openAddMat()">+ Nouvelle matière</button>`:
-    tab==='fournisseurs'?`<button class="btn btn-dark btn-sm" onclick="openAddFournisseur()">+ Fournisseur</button>`:
+    tab==='fournisseurs'?`<button class="btn btn-dark btn-sm" onclick="openAddSup()">+ Fournisseur</button>`:
     tab==='ateliers'?`<button class="btn btn-dark btn-sm" onclick="openAddAtelier()">+ Atelier</button>`:'';
   render();
 }
 
-// ─── RENDER ─────────────────────────────────────────────────
+// ─── RENDER ──────────────────────────────────────────────────
 function render(){
   const c=document.getElementById('content');
   if(curTab==='dashboard')c.innerHTML=rDash();
+  else if(curTab==='commandes')c.innerHTML=rCommandes();
   else if(curTab==='produits')c.innerHTML=rProds();
   else if(curTab==='matieres')c.innerHTML=rMats();
   else if(curTab==='production')c.innerHTML=rProd();
   else if(curTab==='po')c.innerHTML=rPO();
-  else if(curTab==='fournisseurs')c.innerHTML=rFournisseurs();
+  else if(curTab==='fournisseurs')c.innerHTML=rSups();
   else if(curTab==='ateliers')c.innerHTML=rAteliers();
 }
 
-// ─── DASHBOARD ──────────────────────────────────────────────
+// ─── DASHBOARD ───────────────────────────────────────────────
 function rDash(){
   const act=S.products.filter(p=>p.active);
-  const bs=act.filter(p=>p.type==='best-seller');
+  const negatifs=act.filter(p=>(p.stockMRP||0)<0);
   const alerts=S.materials.filter(m=>m.reorder>0&&m.qty<=m.reorder&&m.cat!=='Label'&&m.cat!=='Packaging');
   const syncTime=S.lastSync?new Date(S.lastSync).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'Jamais synchronisé';
   return`
@@ -523,20 +532,21 @@ function rDash(){
     <div><div style="font-size:14px;font-weight:700">Connexion Shopify active</div><div class="sync-info">Dernière synchro : ${syncTime} · ${act.length} produits · atelier-weaves.myshopify.com</div></div>
     <button id="syncBtn" class="btn btn-shopify" onclick="syncShopify()">↻ Synchroniser</button>
   </div>
+  ${negatifs.length>0?`<div class="alert-banner">⚠ ${negatifs.length} produit(s) avec stock MRP négatif — des commandes sont en attente de fabrication ! <button class="btn btn-sm btn-danger" style="margin-left:12px" onclick="nav('produits')">Voir →</button></div>`:''}
   <div class="metrics">
-    <div class="metric-card"><div class="metric-label">Produits actifs</div><div class="metric-value">${act.length||'—'}</div><div class="metric-sub">${bs.length} best-sellers</div></div>
-    <div class="metric-card"><div class="metric-label">En stock</div><div class="metric-value" style="color:var(--green)">${act.filter(p=>p.stock>0).length}</div><div class="metric-sub">produits finis</div></div>
+    <div class="metric-card"><div class="metric-label">Produits actifs</div><div class="metric-value">${act.length||'—'}</div><div class="metric-sub">${act.filter(p=>p.type==='best-seller').length} best-sellers</div></div>
+    <div class="metric-card"><div class="metric-label">Stock MRP négatif</div><div class="metric-value" style="color:${negatifs.length>0?'var(--red)':'var(--green)'}">${negatifs.length}</div><div class="metric-sub">produits à fabriquer</div></div>
     <div class="metric-card"><div class="metric-label">En production</div><div class="metric-value" style="color:var(--amber)">${S.productions.filter(o=>o.status!=='Terminé — prêt à expédier').length}</div><div class="metric-sub">ordres en cours</div></div>
     <div class="metric-card"><div class="metric-label">PO ouverts</div><div class="metric-value" style="color:var(--blue)">${S.purchaseOrders.filter(o=>o.status!=='Clôturé').length}</div><div class="metric-sub">commandes fournisseurs</div></div>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
     <div class="card">
-      <div class="card-header"><span class="card-title">Statut best-sellers (${bs.length})</span><button class="btn btn-sm" onclick="nav('produits')">Voir tout →</button></div>
-      ${act.length===0?`<div class="empty"><div class="empty-icon">🔄</div><div class="empty-text">Cliquez "Synchroniser" pour importer depuis Shopify</div></div>`:`
-      <table><thead><tr><th>Création</th><th>Taille</th><th>Couleur</th><th>Stock</th></tr></thead><tbody>
-      ${bs.slice(0,15).map(p=>`<tr class="clickable" onclick="openRecette('${p.sku}')">
-        <td style="font-weight:600">${p.design}</td><td class="mono">${p.size}</td><td style="font-size:12px">${p.color}</td>
-        <td>${p.stock>0?`<span class="badge bg">${p.stock}</span>`:'<span class="badge br">0</span>'}</td>
+      <div class="card-header"><span class="card-title">Produits à fabriquer (stock MRP négatif)</span><button class="btn btn-sm" onclick="nav('produits')">Voir tout →</button></div>
+      ${negatifs.length===0?`<div class="empty"><div class="empty-icon">✅</div><div class="empty-text">Aucun produit en attente</div><div class="empty-sub">Tous les stocks MRP sont à jour</div></div>`:`
+      <table><thead><tr><th>Produit</th><th>Couleur</th><th>Taille</th><th>Stock MRP</th></tr></thead><tbody>
+      ${negatifs.slice(0,10).map(p=>`<tr class="row-negative clickable" onclick="openRecette('${p.sku}')">
+        <td style="font-weight:600">${p.design}</td><td style="font-size:12px">${p.color}</td><td class="mono">${p.size}</td>
+        <td><span class="badge br">${p.stockMRP||0}</span></td>
       </tr>`).join('')}
       </tbody></table>`}
     </div>
@@ -546,14 +556,50 @@ function rDash(){
         ${alerts.slice(0,4).map(m=>`<div class="arow"><span class="sdot da"></span><div style="flex:1"><div style="font-size:13px;font-weight:600">${m.name}</div><div class="mono">${getSup(m.supplier).name}</div></div><span class="badge ba">${m.qty} restant(s)</span></div>`).join('')}
       </div>`:''}
       <div class="card">
-        <div class="card-header"><span class="card-title">Derniers ordres production</span><button class="btn btn-sm" onclick="nav('production')">Voir →</button></div>
-        ${S.productions.length===0?'<div class="empty"><div class="empty-text">Aucun ordre</div></div>':S.productions.slice(-4).reverse().map(o=>`<div class="arow"><span class="sdot ${o.status==='Terminé — prêt à expédier'?'dg':o.status==='En production'?'da':'db'}"></span><div style="flex:1"><div style="font-size:13px;font-weight:600">${o.id}</div><div class="mono">${o.products.map(p=>p.name).join(', ')}</div></div><span class="badge ${prSB(o.status)}">${o.status}</span></div>`).join('')}
+        <div class="card-header"><span class="card-title">Dernières commandes Shopify</span><button class="btn btn-sm" onclick="nav('commandes')">Voir →</button></div>
+        ${!S.shopifyOrders||S.shopifyOrders.length===0?`<div class="empty"><div class="empty-text">Aucune commande chargée</div><div class="empty-sub">Cliquez "Synchroniser" pour charger</div></div>`:
+        S.shopifyOrders.slice(0,5).map(o=>`<div class="arow">
+          <span class="sdot ${o.financial_status==='paid'?'dg':'da'}"></span>
+          <div style="flex:1"><div style="font-size:13px;font-weight:600">#${o.order_number||o.name} · ${o.billing_address?.first_name||''} ${o.billing_address?.last_name||''}</div>
+          <div class="mono">${new Date(o.created_at).toLocaleDateString('fr-FR')} · ${o.line_items?.length||0} article(s)</div></div>
+          <span style="font-size:13px;font-weight:600">${parseFloat(o.total_price||0).toFixed(2)}€</span>
+        </div>`).join('')}
       </div>
     </div>
   </div>`;
 }
 
-// ─── PRODUITS ───────────────────────────────────────────────
+// ─── COMMANDES ───────────────────────────────────────────────
+function rCommandes(){
+  const orders=S.shopifyOrders||[];
+  const syncTime=S.lastOrderSync?new Date(S.lastOrderSync).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
+  if(orders.length===0)return`<div class="card"><div class="empty"><div class="empty-icon">🛒</div><div class="empty-text">Aucune commande chargée</div><div class="empty-sub">Cliquez "Sync Shopify" pour importer vos commandes</div></div></div>`;
+  return`
+  <div style="background:var(--surface2);border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--text2);display:flex;justify-content:space-between;align-items:center">
+    <span>${orders.length} commande(s) · Dernière sync : ${syncTime}</span>
+    <span style="font-weight:600;color:var(--green)">Total : ${orders.reduce((s,o)=>s+parseFloat(o.total_price||0),0).toFixed(2)}€</span>
+  </div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Commande</th><th>Date</th><th>Client</th><th>Produits</th><th>Paiement</th><th>Fulfillment</th><th>Total</th></tr></thead>
+      <tbody>
+      ${orders.map(o=>`<tr>
+        <td><span class="mono" style="font-weight:600">#${o.order_number||o.name}</span></td>
+        <td class="mono">${new Date(o.created_at).toLocaleDateString('fr-FR')}</td>
+        <td style="font-size:12px">${o.billing_address?.first_name||''} ${o.billing_address?.last_name||''}</td>
+        <td style="font-size:12px;max-width:200px">
+          ${(o.line_items||[]).map(i=>`<div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${i.quantity}× ${i.title||''} ${i.variant_title?'('+i.variant_title+')':''}</div>`).join('')}
+        </td>
+        <td><span class="badge ${o.financial_status==='paid'?'bg':o.financial_status==='refunded'?'br':'ba'}">${o.financial_status||'—'}</span></td>
+        <td><span class="badge ${o.fulfillment_status==='fulfilled'?'bg':'bg2'}">${o.fulfillment_status||'unfulfilled'}</span></td>
+        <td style="font-weight:600">${parseFloat(o.total_price||0).toFixed(2)}€</td>
+      </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+// ─── PRODUITS ────────────────────────────────────────────────
 function rProds(){
   const tf=document.getElementById('tf')?document.getElementById('tf').value:'all';
   const sr=document.getElementById('sp')?document.getElementById('sp').value.toLowerCase():'';
@@ -561,66 +607,71 @@ function rProds(){
   let prods=S.products.filter(p=>p.active);
   if(tf!=='all')prods=prods.filter(p=>p.type===tf);
   if(tp!=='all')prods=prods.filter(p=>p.productType===tp);
-  if(sr)prods=prods.filter(p=>p.name.toLowerCase().includes(sr)||p.design.toLowerCase().includes(sr)||p.sku.toLowerCase().includes(sr));
+  if(sr)prods=prods.filter(p=>p.name.toLowerCase().includes(sr)||p.sku.toLowerCase().includes(sr)||p.design.toLowerCase().includes(sr));
   if(sortProds.col)prods=sortBy(prods,sortProds.col,sortProds.dir);
   const types=[...new Set(S.products.map(p=>p.productType).filter(Boolean))].sort();
+  const negatifs=prods.filter(p=>(p.stockMRP||0)<0);
   if(S.products.length===0)return`<div class="card"><div class="empty"><div class="empty-icon">🔄</div><div class="empty-text">Aucun produit chargé</div><div class="empty-sub">Cliquez "Sync Shopify" en haut à droite</div></div></div>`;
   return`
-  <div style="background:#F0F4FF;border:1px solid #A9CCE3;border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--blue)">
-    💡 Cliquez sur n'importe quelle ligne pour voir et modifier la recette du produit
-  </div>
+  ${negatifs.length>0?`<div class="alert-banner" style="display:flex;align-items:center;justify-content:space-between">
+    <span>⚠ ${negatifs.length} produit(s) avec stock MRP négatif (commandes en attente)</span>
+    <button class="btn btn-sm btn-danger" onclick="openProdModalFromNeg()">✂ Envoyer les négatifs à l'atelier</button>
+  </div>`:''}
   <div class="selbar ${selP.size>0?'show':''}">
     <span>${selP.size} produit(s) sélectionné(s)</span>
-    <button class="btn btn-dark btn-sm" onclick="openProdModal()">✂ Envoyer à l'atelier</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-dark btn-sm" onclick="openProdModal()">✂ Envoyer à l'atelier</button>
+    </div>
   </div>
+  <div class="info-tip">💡 Cliquez sur une ligne pour voir/modifier la recette · Stock MRP négatif = commandes en attente de fabrication</div>
   <div class="card">
     <div class="search-row">
       <input id="sp" placeholder="Rechercher..." value="${sr}" oninput="render()" style="flex:1">
-      <select id="tf" onchange="render()" style="width:140px">
-        <option value="all" ${tf==='all'?'selected':''}>Tous types</option>
-        <option value="best-seller" ${tf==='best-seller'?'selected':''}>Best-sellers</option>
-        <option value="custom" ${tf==='custom'?'selected':''}>Custom</option>
-      </select>
-      <select id="tp" onchange="render()" style="width:130px">
-        <option value="all">Tous produits</option>
-        ${types.map(t=>`<option value="${t}" ${tp===t?'selected':''}>${t}</option>`).join('')}
-      </select>
+      <select id="tf" onchange="render()" style="width:140px"><option value="all">Tous types</option><option value="best-seller" ${tf==='best-seller'?'selected':''}>Best-sellers</option><option value="custom" ${tf==='custom'?'selected':''}>Custom</option></select>
+      <select id="tp" onchange="render()" style="width:130px"><option value="all">Tous produits</option>${types.map(t=>`<option value="${t}" ${tp===t?'selected':''}>${t}</option>`).join('')}</select>
     </div>
     <table>
       <thead><tr>
-        <th class="no-sort" style="width:36px"><input type="checkbox" onchange="togAllP(this)"></th>
-        ${thSort('Produit','name',sortProds)}
-        ${thSort('SKU','sku',sortProds)}
-        <th class="no-sort">Type</th>
-        ${thSort('Couleur','color',sortProds)}
-        ${thSort('Taille','size',sortProds)}
-        ${thSort('Stock','stock',sortProds)}
-        ${thSort('Prix','price',sortProds)}
-        <th class="no-sort">Recette</th>
+        <th class="nosort" style="width:36px"><input type="checkbox" onchange="togAllP(this)"></th>
+        ${th('Produit','name',sortProds)}
+        ${th('SKU','sku',sortProds)}
+        <th class="nosort">Type</th>
+        ${th('Couleur','color',sortProds)}
+        ${th('Taille','size',sortProds)}
+        ${th('Stock Shopify','stock',sortProds)}
+        ${th('Stock MRP','stockMRP',sortProds)}
+        <th class="nosort">Mise à jour MRP</th>
+        <th class="nosort">Recette</th>
       </tr></thead>
       <tbody>
       ${prods.map(p=>{
+        const mrp=p.stockMRP||0;
+        const neg=mrp<0;
+        const hasCustom=!!S.recipes[p.sku];
         const recipe=getRecipe(p.sku);
-        const hasCustomRecipe=!!S.recipes[p.sku];
-        return`<tr class="${selP.has(p.sku)?'selected':''} clickable" onclick="handleProdClick(event,'${p.sku}')">
+        return`<tr class="${selP.has(p.sku)?'selected':neg?'row-negative':''} clickable" onclick="handleProdClick(event,'${p.sku}')">
           <td onclick="event.stopPropagation()"><input type="checkbox" ${selP.has(p.sku)?'checked':''} onchange="togP('${p.sku}',this)" onclick="event.stopPropagation()"></td>
           <td style="font-weight:600;font-size:12px">${p.name}</td>
           <td class="mono">${p.sku}</td>
-          <td><span class="badge ${p.type==='best-seller'?'bb':'bg2'}">${p.type==='best-seller'?'Best-seller':'Custom'}</span></td>
+          <td><span class="badge ${p.type==='best-seller'?'bb':'bg2'}">${p.type==='best-seller'?'BS':'Custom'}</span></td>
           <td style="font-size:12px">${p.color||'—'}</td>
           <td class="mono">${p.size}</td>
-          <td>${p.stock>0?`<span class="badge bg">${p.stock}</span>`:'<span class="badge br">0</span>'}</td>
-          <td style="font-weight:600">${p.price}€</td>
-          <td><span class="badge ${recipe.length>0?'bg':''} ${hasCustomRecipe?'bpu':''}" style="font-size:10px">${recipe.length>0?(hasCustomRecipe?`✎ ${recipe.length} mat.`:`${recipe.length} mat.`):'—'}</span></td>
+          <td><span class="badge ${p.stock>0?'bg':'bg2'}">${p.stock}</span></td>
+          <td><span class="badge ${neg?'br':mrp>0?'bg':'bg2'}" style="${neg?'font-weight:700':''}">${mrp}</span></td>
+          <td onclick="event.stopPropagation()" style="white-space:nowrap">
+            <input type="number" value="${mrp}" style="width:65px;padding:3px 6px;font-size:12px;display:inline-block" id="mrp-${p.sku.replace(/[^a-z0-9]/gi,'-')}">
+            <button class="btn btn-xs btn-amber" onclick="updateMRP('${p.sku}',event)">Mettre à jour</button>
+          </td>
+          <td><span class="badge ${recipe.length>0?(hasCustom?'bpu':'bg'):'bg2'}" style="font-size:10px">${recipe.length>0?(hasCustom?`✎ ${recipe.length} mat.`:`${recipe.length} mat.`):'—'}</span></td>
         </tr>`;
       }).join('')}
       </tbody>
     </table>
-    <div style="padding:10px 18px;font-size:11px;color:var(--text3);border-top:1px solid rgba(0,0,0,0.07)">${prods.length} produit(s) · Cliquez sur une ligne pour voir la recette</div>
+    <div style="padding:10px 18px;font-size:11px;color:var(--text3);border-top:1px solid rgba(0,0,0,0.07)">${prods.length} produit(s) affiché(s)</div>
   </div>`;
 }
 
-// ─── MATIÈRES ───────────────────────────────────────────────
+// ─── MATIÈRES ────────────────────────────────────────────────
 function rMats(){
   const cf=document.getElementById('cf')?document.getElementById('cf').value:'all';
   const sr=document.getElementById('sm')?document.getElementById('sm').value.toLowerCase():'';
@@ -634,25 +685,23 @@ function rMats(){
     <span>${selM.size} matière(s) sélectionnée(s)</span>
     <button class="btn btn-dark btn-sm" onclick="openPOModal()">📦 Créer des PO fournisseurs</button>
   </div>
+  <div class="info-tip">💡 Cliquez sur une ligne pour modifier · Modifiez le stock dans la colonne "Stock" puis cliquez "Mettre à jour"</div>
   <div class="card">
     <div class="search-row">
       <input id="sm" placeholder="Rechercher..." value="${sr}" oninput="render()" style="flex:1">
-      <select id="cf" onchange="render()" style="width:160px">
-        <option value="all">Toutes catégories</option>
-        ${cats.map(c=>`<option value="${c}" ${cf===c?'selected':''}>${c}</option>`).join('')}
-      </select>
+      <select id="cf" onchange="render()" style="width:160px"><option value="all">Toutes catégories</option>${cats.map(c=>`<option value="${c}" ${cf===c?'selected':''}>${c}</option>`).join('')}</select>
     </div>
     <table>
       <thead><tr>
-        <th class="no-sort" style="width:36px"><input type="checkbox" onchange="togAllM(this)"></th>
-        ${thSortM('Matière','name')}
-        ${thSortM('SKU','sku')}
-        <th class="no-sort">Catégorie</th>
-        <th class="no-sort">Fournisseur</th>
-        ${thSortM('Coût','cost')}
-        ${thSortM('Stock','qty')}
-        <th class="no-sort">Seuil</th>
-        ${thSortM('Valeur','qty')}
+        <th class="nosort" style="width:36px"><input type="checkbox" onchange="togAllM(this)"></th>
+        ${th('Matière','name',sortMats)}
+        ${th('SKU','sku',sortMats)}
+        <th class="nosort">Catégorie</th>
+        <th class="nosort">Fournisseur</th>
+        ${th('Coût','cost',sortMats)}
+        <th class="nosort">Stock</th>
+        <th class="nosort">Seuil</th>
+        ${th('Valeur','qty',sortMats)}
       </tr></thead>
       <tbody>
       ${mats.map(m=>{const al=m.reorder>0&&m.qty<=m.reorder;return`<tr class="${selM.has(m.sku)?'selected':''} clickable" onclick="handleMatClick(event,'${m.sku}')">
@@ -662,60 +711,76 @@ function rMats(){
         <td><span class="badge bg2">${m.cat}</span></td>
         <td style="font-size:12px">${getSup(m.supplier).emoji} ${getSup(m.supplier).name}</td>
         <td class="mono">${m.cost.toFixed(2)}€</td>
-        <td onclick="event.stopPropagation()"><div style="display:flex;align-items:center;gap:6px">${al?'<span class="sdot da"></span>':''}<input type="number" value="${m.qty}" min="0" style="width:65px;padding:4px 6px;font-size:12px${al?';border-color:#F5A623':''}" onchange="updMQ('${m.sku}',this.value)" onclick="event.stopPropagation()"></div></td>
+        <td onclick="event.stopPropagation()" style="white-space:nowrap">
+          ${al?'<span class="sdot da" style="margin-right:4px"></span>':''}
+          <input type="number" value="${m.qty}" style="width:65px;padding:3px 6px;font-size:12px;display:inline-block;${al?'border-color:#F5A623':''}" id="mq-${m.sku.replace(/[^a-z0-9]/gi,'-')}">
+          <button class="btn btn-xs btn-amber" onclick="updateMatQty('${m.sku}',event)" style="margin-left:4px">Mettre à jour</button>
+        </td>
         <td class="mono" style="${al?'color:var(--amber);font-weight:600':''}">${m.reorder>0?m.reorder:'—'}</td>
         <td class="mono">${(m.qty*m.cost).toFixed(2)}€</td>
       </tr>`;}).join('')}
       </tbody>
     </table>
-    <div style="padding:10px 18px;font-size:11px;color:var(--text3);border-top:1px solid rgba(0,0,0,0.07)">💡 Cliquez sur une ligne pour modifier la matière · ${S.materials.length} matières au total</div>
+    <div style="padding:12px 18px;border-top:1px solid rgba(0,0,0,0.1);text-align:right;font-size:12px;color:var(--text2)">Valeur totale : <strong style="color:var(--text)">${S.materials.reduce((s,m)=>s+m.qty*m.cost,0).toFixed(2)}€</strong></div>
   </div>`;
 }
 
-// ─── PRODUCTION ─────────────────────────────────────────────
+// ─── PRODUCTION ──────────────────────────────────────────────
 function rProd(){
   const sts=['Commande reçue','Matériaux reçus','En production','Terminé — prêt à expédier'];
   const ac=S.productions.filter(o=>o.status!=='Terminé — prêt à expédier');
   const dn=S.productions.filter(o=>o.status==='Terminé — prêt à expédier');
   return`
   <div style="display:flex;justify-content:flex-end;margin-bottom:16px"><button class="btn btn-dark" onclick="nav('produits')">+ Nouvel ordre</button></div>
-  ${S.productions.length===0?'<div class="card"><div class="empty"><div class="empty-icon">✂️</div><div class="empty-text">Aucun ordre de production</div><div class="empty-sub">Sélectionnez des produits dans Produits finis et cliquez "Envoyer à l\'atelier"</div></div></div>':''}
+  ${S.productions.length===0?'<div class="card"><div class="empty"><div class="empty-icon">✂️</div><div class="empty-text">Aucun ordre de production</div><div class="empty-sub">Sélectionnez des produits et cliquez "Envoyer à l\'atelier"</div></div></div>':''}
   ${ac.length>0?`<div class="card"><div class="card-header"><span class="card-title">En cours (${ac.length})</span></div>
   <table><thead><tr><th>Réf.</th><th>Type</th><th>Atelier</th><th>Produits</th><th>Statut</th><th>Date prévue</th><th>Note</th><th></th></tr></thead><tbody>
   ${ac.map(o=>`<tr>
     <td class="mono" style="font-weight:600">${o.id}</td>
     <td><span class="badge ${o.type==='best-seller'?'bb':'bg2'}">${o.type==='best-seller'?'BS':'Custom'}</span></td>
     <td style="font-size:12px">${o.atelier?getAtelier(o.atelier).name:'—'}</td>
-    <td style="font-size:12px;max-width:180px">${o.products.map(p=>p.name).join('<br>')}</td>
-    <td><select onchange="updPrSt('${o.id}',this.value)" style="font-size:12px;padding:5px 8px;width:180px">
-      ${sts.map(s=>`<option ${o.status===s?'selected':''}>${s}</option>`).join('')}
-    </select></td>
+    <td style="font-size:12px;max-width:160px">${o.products.map(p=>p.name).join('<br>')}</td>
+    <td><select onchange="updPrSt('${o.id}',this.value)" style="font-size:12px;padding:4px 8px;width:175px">${sts.map(s=>`<option ${o.status===s?'selected':''}>${s}</option>`).join('')}</select></td>
     <td class="mono">${fd(o.date)}</td>
     <td style="font-size:12px;color:var(--text2)">${o.note||'—'}</td>
-    <td><button class="btn btn-sm btn-danger" onclick="delProd('${o.id}')">✕</button></td>
+    <td style="white-space:nowrap">
+      <button class="btn btn-xs" onclick="openEditProd('${o.id}')" style="margin-right:4px">✎</button>
+      <button class="btn btn-xs btn-danger" onclick="deleteProd('${o.id}')">🗑</button>
+    </td>
   </tr>`).join('')}
   </tbody></table></div>`:''}
   ${dn.length>0?`<div class="card"><div class="card-header"><span class="card-title" style="color:var(--green)">✓ Terminés (${dn.length})</span></div>
-  <table><thead><tr><th>Réf.</th><th>Atelier</th><th>Produits</th><th>Date</th><th>Note</th></tr></thead><tbody>
-  ${dn.map(o=>`<tr><td class="mono" style="font-weight:600">${o.id}</td><td style="font-size:12px">${o.atelier?getAtelier(o.atelier).name:'—'}</td><td style="font-size:12px">${o.products.map(p=>p.name).join(', ')}</td><td class="mono">${fd(o.date)}</td><td style="font-size:12px;color:var(--text2)">${o.note||'—'}</td></tr>`).join('')}
+  <table><thead><tr><th>Réf.</th><th>Atelier</th><th>Produits</th><th>Date</th><th>Note</th><th></th></tr></thead><tbody>
+  ${dn.map(o=>`<tr>
+    <td class="mono" style="font-weight:600">${o.id}</td>
+    <td style="font-size:12px">${o.atelier?getAtelier(o.atelier).name:'—'}</td>
+    <td style="font-size:12px">${o.products.map(p=>p.name).join(', ')}</td>
+    <td class="mono">${fd(o.date)}</td>
+    <td style="font-size:12px;color:var(--text2)">${o.note||'—'}</td>
+    <td><button class="btn btn-xs btn-danger" onclick="deleteProd('${o.id}')">🗑</button></td>
+  </tr>`).join('')}
   </tbody></table></div>`:''}`;
 }
 
-// ─── PO ─────────────────────────────────────────────────────
+// ─── PO ──────────────────────────────────────────────────────
 function rPO(){
   const op=S.purchaseOrders.filter(o=>o.status!=='Clôturé');
   const cl=S.purchaseOrders.filter(o=>o.status==='Clôturé');
-  const poCard=(o,actions)=>{
+  const card=(o,open)=>{
     const sup=getSup(o.sid);
     const tot=o.items.reduce((s,i)=>s+i.qty*i.cost,0);
-    return`<div class="ocard"><div class="ochead">
+    return`<div class="ocard"><div class="ocard-head">
       <div>
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
           <span class="oid">${o.id}</span><span>${sup.emoji}</span><span style="font-size:13px;font-weight:700">${sup.name}</span><span class="badge ${poSB(o.status)}">${o.status}</span>
         </div>
-        <div class="ometa">Créé le ${fd(o.createdAt)} · Livraison souhaitée : ${fd(o.delivDate)} · Total : <strong>${tot.toFixed(2)}€</strong>${o.note?' · '+o.note:''}</div>
+        <div class="ometa">Créé le ${fd(o.createdAt)} · Livraison : ${fd(o.delivDate)} · Total : <strong>${tot.toFixed(2)}€</strong>${o.note?' · '+o.note:''}</div>
       </div>
-      ${actions?`<div style="display:flex;gap:6px"><button class="btn btn-sm btn-green" onclick="openRecModal('${o.id}')">📥 Réceptionner</button><button class="btn btn-sm btn-danger" onclick="closePO('${o.id}')">Clôturer</button></div>`:''}
+      <div style="display:flex;gap:6px">
+        ${open?`<button class="btn btn-xs" onclick="openEditPO('${o.id}')">✎ Modifier</button>`:''}
+        ${open?`<button class="btn btn-xs btn-green" onclick="openRecModal('${o.id}')">📥 Réceptionner</button>`:''}
+        <button class="btn btn-xs btn-danger" onclick="deletePO('${o.id}')">🗑</button>
+      </div>
     </div>
     <table style="font-size:12px"><thead><tr><th>Matière</th><th>Qté</th><th>Coût</th><th>Total</th></tr></thead><tbody>
     ${o.items.map(i=>`<tr><td style="font-weight:600">${getMat(i.sku).name}</td><td>${i.qty}</td><td class="mono">${i.cost.toFixed(2)}€</td><td class="mono">${(i.qty*i.cost).toFixed(2)}€</td></tr>`).join('')}
@@ -723,89 +788,13 @@ function rPO(){
   };
   return`
   <div style="display:flex;justify-content:flex-end;margin-bottom:16px"><button class="btn btn-dark" onclick="nav('matieres')">+ Nouveau PO</button></div>
-  ${S.purchaseOrders.length===0?'<div class="card"><div class="empty"><div class="empty-icon">📄</div><div class="empty-text">Aucun purchase order</div><div class="empty-sub">Sélectionnez des matières et cliquez "Créer des PO"</div></div></div>':''}
-  ${op.length>0?`<div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">EN COURS (${op.length})</div>${op.slice().reverse().map(o=>poCard(o,true)).join('')}`:''}
-  ${cl.length>0?`<div style="margin-top:20px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">CLÔTURÉS (${cl.length})</div>${cl.slice().reverse().map(o=>poCard(o,false)).join('')}`:''}`;
+  ${S.purchaseOrders.length===0?'<div class="card"><div class="empty"><div class="empty-icon">📄</div><div class="empty-text">Aucun purchase order</div></div></div>':''}
+  ${op.length>0?`<div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">EN COURS (${op.length})</div>${op.slice().reverse().map(o=>card(o,true)).join('')}`:''}
+  ${cl.length>0?`<div style="margin-top:20px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">CLÔTURÉS (${cl.length})</div>${cl.slice().reverse().map(o=>card(o,false)).join('')}`:''}`;
 }
 
-// ─── MOT DE PASSE ───────────────────────────────────────────
-const MRP_PWD = 'atelierweaves2026';
-function checkLogin(){
-  const val = document.getElementById('loginPwd').value;
-  if(val === MRP_PWD){
-    localStorage.setItem('aw_mrp_auth','1');
-    document.getElementById('loginScreen').style.display='none';
-  } else {
-    document.getElementById('loginError').style.display='block';
-    document.getElementById('loginPwd').value='';
-  }
-}
-function initAuth(){
-  if(localStorage.getItem('aw_mrp_auth')==='1'){
-    document.getElementById('loginScreen').style.display='none';
-  } else {
-    document.getElementById('loginScreen').style.display='flex';
-  }
-}
-
-// ─── MATIÈRES ADD/EDIT ──────────────────────────────────────
-let editingMatSku = null;
-function openAddMat(){
-  editingMatSku = null;
-  document.getElementById('matModalTitle').textContent = 'Nouvelle matière première';
-  document.getElementById('matDeleteBtn').style.display = 'none';
-  ['matName','matSku','matCost','matQty','matReorder'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('matCat').value = 'Hoodie';
-  const sel = document.getElementById('matSupplier');
-  sel.innerHTML = S.suppliers.map(s => `<option value="${s.id}">${s.emoji} ${s.name}</option>`).join('');
-  document.getElementById('matModal').classList.add('open');
-}
-function openEditMat(sku){
-  const m = S.materials.find(m => m.sku === sku);
-  if(!m) return;
-  editingMatSku = sku;
-  document.getElementById('matModalTitle').textContent = 'Modifier la matière';
-  document.getElementById('matDeleteBtn').style.display = 'inline-flex';
-  document.getElementById('matName').value = m.name;
-  document.getElementById('matSku').value = m.sku;
-  document.getElementById('matCat').value = m.cat;
-  document.getElementById('matCost').value = m.cost;
-  document.getElementById('matQty').value = m.qty;
-  document.getElementById('matReorder').value = m.reorder;
-  const sel = document.getElementById('matSupplier');
-  sel.innerHTML = S.suppliers.map(s => `<option value="${s.id}" ${s.id===m.supplier?'selected':''}>${s.emoji} ${s.name}</option>`).join('');
-  document.getElementById('matModal').classList.add('open');
-}
-function saveMat(){
-  const name = document.getElementById('matName').value.trim();
-  const sku = document.getElementById('matSku').value.trim();
-  if(!name || !sku){ alert('Le nom et le SKU sont obligatoires'); return; }
-  const data = {
-    name, sku,
-    cat: document.getElementById('matCat').value,
-    supplier: document.getElementById('matSupplier').value,
-    cost: parseFloat(document.getElementById('matCost').value) || 0,
-    qty: parseInt(document.getElementById('matQty').value) || 0,
-    reorder: parseInt(document.getElementById('matReorder').value) || 0,
-  };
-  if(editingMatSku){
-    const idx = S.materials.findIndex(m => m.sku === editingMatSku);
-    if(idx >= 0) S.materials[idx] = data;
-  } else {
-    if(S.materials.find(m => m.sku === sku)){ alert('Un SKU identique existe déjà'); return; }
-    S.materials.push(data);
-  }
-  save(); closeModal('matModal'); render();
-}
-function deleteMat(){
-  if(!editingMatSku) return;
-  if(!confirm('Supprimer cette matière ? Cette action est irréversible.')) return;
-  S.materials = S.materials.filter(m => m.sku !== editingMatSku);
-  save(); closeModal('matModal'); render();
-}
-
-
-function rFournisseurs(){
+// ─── FOURNISSEURS ────────────────────────────────────────────
+function rSups(){
   return`<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">${S.suppliers.map(sup=>{
     const mats=S.materials.filter(m=>m.supplier===sup.id);
     const tv=mats.reduce((s,m)=>s+m.qty*m.cost,0);
@@ -817,7 +806,7 @@ function rFournisseurs(){
           <div style="width:44px;height:44px;border-radius:10px;background:${sup.color||'#eee'};display:flex;align-items:center;justify-content:center;font-size:20px">${sup.emoji}</div>
           <div><div style="font-size:15px;font-weight:700">${sup.name}</div><div style="font-size:12px;color:var(--text2)">${sup.cat}</div></div>
         </div>
-        <button class="btn btn-sm" onclick="openEditFournisseur('${sup.id}')">✎ Modifier</button>
+        <button class="btn btn-sm" onclick="openEditSup('${sup.id}')">✎ Modifier</button>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;color:var(--text2);margin-bottom:14px">
         <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:3px">Contact</div>${sup.contact||'—'}</div>
@@ -826,35 +815,27 @@ function rFournisseurs(){
         <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:3px">PO ouverts</div><strong style="color:${op>0?'var(--blue)':'var(--text)'}">${op}</strong></div>
       </div>
       ${sup.notes?`<div style="background:var(--surface2);border-radius:6px;padding:8px 10px;font-size:12px;color:var(--text2);margin-bottom:14px">${sup.notes}</div>`:''}
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding-top:14px;border-top:1px solid var(--border);margin-bottom:${mats.length>0?'14px':'0'}">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding-top:14px;border-top:1px solid var(--border);margin-bottom:${mats.length>0?'14':'0'}px">
         <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:3px">Références</div><div style="font-size:15px;font-weight:700">${mats.length}</div></div>
         <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:3px">Valeur stock</div><div style="font-size:15px;font-weight:700">${tv.toFixed(0)}€</div></div>
         <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:3px">Alertes</div><div style="font-size:15px;font-weight:700;color:${al>0?'var(--amber)':'var(--green)'}">${al}</div></div>
       </div>
-      ${mats.length>0?`<div style="border-top:1px solid var(--border);padding-top:12px">
-        ${mats.slice(0,6).map(m=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(0,0,0,0.06);font-size:12px"><span>${m.name}</span><span class="badge ${m.qty===0?'br':m.qty<=m.reorder&&m.reorder>0?'ba':'bg'}">${m.qty}</span></div>`).join('')}
-        ${mats.length>6?`<div style="font-size:11px;color:var(--text3);margin-top:6px">+ ${mats.length-6} autres</div>`:''}
-      </div>`:''}
+      ${mats.length>0?`<div style="border-top:1px solid var(--border);padding-top:12px">${mats.slice(0,6).map(m=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(0,0,0,0.06);font-size:12px"><span>${m.name}</span><span class="badge ${m.qty<=0?'br':m.qty<=m.reorder&&m.reorder>0?'ba':'bg'}">${m.qty}</span></div>`).join('')}${mats.length>6?`<div style="font-size:11px;color:var(--text3);margin-top:6px">+ ${mats.length-6} autres</div>`:''}</div>`:''}
     </div>`;}).join('')}</div>`;
 }
 
-// ─── ATELIERS ───────────────────────────────────────────────
+// ─── ATELIERS ────────────────────────────────────────────────
 function rAteliers(){
   return`<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">${S.ateliers.map(a=>{
     const ordres=S.productions.filter(o=>o.atelier===a.id&&o.status!=='Terminé — prêt à expédier').length;
+    const done=S.productions.filter(o=>o.atelier===a.id&&o.status==='Terminé — prêt à expédier').length;
     return`<div class="atelier-card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
         <div style="display:flex;align-items:center;gap:12px">
           <div style="width:44px;height:44px;border-radius:10px;background:#E8DAEF;display:flex;align-items:center;justify-content:center;font-size:20px">${a.emoji}</div>
-          <div>
-            <div style="font-size:15px;font-weight:700">${a.name}</div>
-            <div style="font-size:12px;color:var(--text2)">${a.spec||'—'}</div>
-          </div>
+          <div><div style="font-size:15px;font-weight:700">${a.name}</div><div style="font-size:12px;color:var(--text2)">${a.spec||'—'}</div></div>
         </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="badge ${statusColor(a.status)}">${a.status||'actif'}</span>
-          <button class="btn btn-sm" onclick="openEditAtelier('${a.id}')">✎ Modifier</button>
-        </div>
+        <div style="display:flex;gap:8px;align-items:center"><span class="badge ${scBadge(a.status)}">${a.status||'actif'}</span><button class="btn btn-sm" onclick="openEditAtelier('${a.id}')">✎</button></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;color:var(--text2);margin-bottom:14px">
         <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:3px">Contact</div>${a.contact||'—'}</div>
@@ -862,42 +843,39 @@ function rAteliers(){
         <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:3px">Capacité</div>${a.capa||'—'}</div>
         <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:3px">Localisation</div>${a.loc||'—'}</div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:14px">
-        <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:3px">Ordres en cours</div><div style="font-size:20px;font-weight:700;color:${ordres>0?'var(--amber)':'var(--text)'}">${ordres}</div></div>
-        <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:3px">Terminés total</div><div style="font-size:20px;font-weight:700">${S.productions.filter(o=>o.atelier===a.id&&o.status==='Terminé — prêt à expédier').length}</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:${a.notes?'14':'0'}px">
+        <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:3px">En cours</div><div style="font-size:20px;font-weight:700;color:${ordres>0?'var(--amber)':'var(--text)'}">${ordres}</div></div>
+        <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text3);margin-bottom:3px">Terminés</div><div style="font-size:20px;font-weight:700">${done}</div></div>
       </div>
       ${a.notes?`<div style="background:var(--surface2);border-radius:6px;padding:8px 10px;font-size:12px;color:var(--text2)">${a.notes}</div>`:''}
     </div>`;}).join('')}
-  ${S.ateliers.length===0?'<div class="card"><div class="empty"><div class="empty-icon">✂️</div><div class="empty-text">Aucun atelier enregistré</div><div class="empty-sub">Cliquez "+ Atelier" pour en ajouter un</div></div></div>':''}</div>`;
+  ${S.ateliers.length===0?'<div class="card"><div class="empty"><div class="empty-icon">✂️</div><div class="empty-text">Aucun atelier enregistré</div></div></div>':''}</div>`;
 }
 
-// ─── ACTIONS PRODUITS ───────────────────────────────────────
-function handleProdClick(event, sku){
-  // Si click sur checkbox ou input, ne pas ouvrir la recette
-  if(event.target.type==='checkbox')return;
-  openRecette(sku);
-}
+// ─── ACTIONS PRODUITS ────────────────────────────────────────
+function handleProdClick(e,sku){if(e.target.tagName==='INPUT'||e.target.tagName==='BUTTON')return;openRecette(sku);}
+function handleMatClick(e,sku){if(e.target.tagName==='INPUT'||e.target.tagName==='BUTTON')return;openEditMat(sku);}
 function togP(sku,cb){cb.checked?selP.add(sku):selP.delete(sku);render();}
 function togAllP(cb){S.products.filter(p=>p.active).forEach(p=>cb.checked?selP.add(p.sku):selP.delete(p.sku));render();}
 function togM(sku,cb){cb.checked?selM.add(sku):selM.delete(sku);render();}
 function togAllM(cb){S.materials.forEach(m=>cb.checked?selM.add(m.sku):selM.delete(m.sku));render();}
-function updMQ(sku,val){const m=S.materials.find(m=>m.sku===sku);if(m){m.qty=parseInt(val)||0;save();}}
-function updPrSt(id,val){
-  const o=S.productions.find(o=>o.id===id);
-  if(o){
-    const wasNotDone=o.status!=='Terminé — prêt à expédier';
-    o.status=val;
-    if(val==='Terminé — prêt à expédier'&&wasNotDone){
-      o.products.forEach(op=>{const p=S.products.find(p=>p.name===op.name);if(p)p.stock=(p.stock||0)+op.qty;});
-    }
-    save();render();
-  }
-}
-function delProd(id){if(confirm('Supprimer ?')){S.productions=S.productions.filter(o=>o.id!==id);save();render();}}
-function closePO(id){if(confirm('Clôturer ?')){const o=S.purchaseOrders.find(o=>o.id===id);if(o){o.status='Clôturé';save();render();}}}
 
-// ─── MODAL RECETTE ──────────────────────────────────────────
-let currentRecette=[];
+function updateMRP(sku,e){
+  e.stopPropagation();
+  const id='mrp-'+sku.replace(/[^a-z0-9]/gi,'-');
+  const val=parseInt(document.getElementById(id)?.value)||0;
+  const p=S.products.find(p=>p.sku===sku);
+  if(p){p.stockMRP=val;save();render();}
+}
+function updateMatQty(sku,e){
+  e.stopPropagation();
+  const id='mq-'+sku.replace(/[^a-z0-9]/gi,'-');
+  const val=parseInt(document.getElementById(id)?.value)||0;
+  const m=S.materials.find(m=>m.sku===sku);
+  if(m){m.qty=val;save();render();}
+}
+
+// ─── RECETTE ─────────────────────────────────────────────────
 function openRecette(sku){
   editingRecetteSku=sku;
   const p=S.products.find(p=>p.sku===sku);
@@ -905,218 +883,322 @@ function openRecette(sku){
   currentRecette=[...getRecipe(sku).map(r=>({...r}))];
   document.getElementById('recetteTitle').textContent=p.name;
   document.getElementById('recetteSku').textContent=sku;
-  // Peupler le select de matières
   const sel=document.getElementById('addMatSku');
-  sel.innerHTML='<option value="">— Choisir une matière —</option>'+
-    S.materials.map(m=>`<option value="${m.sku}">${m.name} (stock: ${m.qty})</option>`).join('');
+  sel.innerHTML='<option value="">— Choisir —</option>'+S.materials.map(m=>`<option value="${m.sku}">${m.name} (stock: ${m.qty})</option>`).join('');
   renderRecetteRows();
   document.getElementById('recetteModal').classList.add('open');
 }
 function renderRecetteRows(){
-  const container=document.getElementById('recetteRows');
-  if(currentRecette.length===0){
-    container.innerHTML='<div style="color:var(--text3);font-size:13px;padding:12px 0">Aucune matière dans cette recette. Ajoutez-en ci-dessous.</div>';
-    return;
-  }
-  container.innerHTML=`
-    <div style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">Matières de la recette</div>
-    <table><thead><tr><th>Matière</th><th>Stock actuel</th><th>Quantité nécessaire</th><th></th></tr></thead><tbody>
-    ${currentRecette.map((r,i)=>{
-      const mat=getMat(r.sku);
-      const ok=getQty(r.sku)>=r.qty;
-      return`<tr>
-        <td><div style="font-weight:600;font-size:13px">${mat.name}</div><div class="mono">${r.sku}</div></td>
-        <td><span class="badge ${ok?'bg':'br'}">${getQty(r.sku)}</span></td>
-        <td><input type="number" value="${r.qty}" min="0.1" step="0.1" style="width:80px;padding:5px 8px;font-size:13px" onchange="updateRecetteQty(${i},this.value)"></td>
-        <td><button class="btn btn-danger btn-xs" onclick="removeFromRecette(${i})">✕</button></td>
-      </tr>`;
-    }).join('')}
-    </tbody></table>`;
+  const c=document.getElementById('recetteRows');
+  if(!currentRecette.length){c.innerHTML='<div style="color:var(--text3);font-size:13px;padding:12px 0">Aucune matière. Ajoutez-en ci-dessous.</div>';return;}
+  c.innerHTML=`<div style="font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--text2);margin-bottom:10px">Matières de la recette</div>
+  <table><thead><tr><th>Matière</th><th>Stock actuel</th><th>Quantité</th><th></th></tr></thead><tbody>
+  ${currentRecette.map((r,i)=>{const m=getMat(r.sku);const ok=getQty(r.sku)>=r.qty;return`<tr>
+    <td><div style="font-weight:600;font-size:13px">${m.name}</div><div class="mono">${r.sku}</div></td>
+    <td><span class="badge ${ok?'bg':'br'}">${getQty(r.sku)}</span></td>
+    <td><input type="number" value="${r.qty}" min="0.1" step="0.1" style="width:80px;padding:5px 8px;font-size:13px" onchange="currentRecette[${i}].qty=parseFloat(this.value)||1;renderRecetteRows()"></td>
+    <td><button class="btn btn-danger btn-xs" onclick="currentRecette.splice(${i},1);renderRecetteRows()">✕</button></td>
+  </tr>`;}).join('')}
+  </tbody></table>`;
 }
-function updateRecetteQty(i,val){currentRecette[i].qty=parseFloat(val)||1;renderRecetteRows();}
-function removeFromRecette(i){currentRecette.splice(i,1);renderRecetteRows();}
 function addToRecette(){
-  const sku=document.getElementById('addMatSku').value;
-  const qty=parseFloat(document.getElementById('addMatQty').value)||1;
+  const sku=document.getElementById('addMatSku').value;const qty=parseFloat(document.getElementById('addMatQty').value)||1;
   if(!sku)return;
-  const existing=currentRecette.find(r=>r.sku===sku);
-  if(existing){existing.qty+=qty;}
-  else{currentRecette.push({sku,qty});}
-  document.getElementById('addMatSku').value='';
-  document.getElementById('addMatQty').value='1';
+  const ex=currentRecette.find(r=>r.sku===sku);
+  if(ex)ex.qty+=qty;else currentRecette.push({sku,qty});
+  document.getElementById('addMatSku').value='';document.getElementById('addMatQty').value='1';
   renderRecetteRows();
 }
 function saveRecette(){
   if(!editingRecetteSku)return;
   S.recipes[editingRecetteSku]=[...currentRecette];
-  save();
-  closeModal('recetteModal');
-  render();
+  save();closeModal('recetteModal');render();
 }
 
-// ─── MODAL PRODUCTION ───────────────────────────────────────
-function openProdModal(){
-  const items=[...selP].map(sku=>S.products.find(p=>p.sku===sku)).filter(Boolean);
-  if(!items.length)return;
-  document.getElementById('prodItems').innerHTML=`
-    <div style="background:var(--surface2);border-radius:6px;padding:12px 14px;margin-bottom:4px">
-      <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Produits à fabriquer</div>
-      ${items.map(p=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span style="font-size:13px;font-weight:600">${p.name}</span><span class="badge ${p.type==='best-seller'?'bb':'bg2'}">${p.type==='best-seller'?'Best-seller':'Custom'}</span></div>`).join('')}
-    </div>`;
-  // Atelier select
+// ─── MODAL PRODUCTION ────────────────────────────────────────
+function populateProdModal(items,editing=false){
+  document.getElementById('prodModalTitle').textContent=editing?'Modifier l\'ordre de production':'Créer un ordre de production';
+  document.getElementById('prodItems').innerHTML=`<div style="background:var(--surface2);border-radius:6px;padding:12px 14px">
+    <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Produits</div>
+    ${items.map(p=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)"><span style="font-size:13px;font-weight:600">${p.name}</span><span class="badge ${p.type==='best-seller'?'bb':'bg2'}">${p.type==='best-seller'?'BS':'Custom'}</span></div>`).join('')}
+  </div>`;
   const sel=document.getElementById('prodAtelier');
   sel.innerHTML=S.ateliers.filter(a=>a.status==='actif').map(a=>`<option value="${a.id}">${a.emoji} ${a.name}</option>`).join('');
   const bom={};items.forEach(p=>{getRecipe(p.sku).forEach(r=>{bom[r.sku]=(bom[r.sku]||0)+r.qty;});});
   const allOk=Object.entries(bom).every(([s,q])=>getQty(s)>=q);
   document.getElementById('prodBom').innerHTML=Object.keys(bom).length?`
-    <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Matières qui seront déduites</div>
+    <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Matières</div>
     <table><thead><tr><th>Matière</th><th>Nécessaire</th><th>Stock</th><th>Statut</th></tr></thead><tbody>
     ${Object.entries(bom).map(([sku,qty])=>{const av=getQty(sku);const ok=av>=qty;return`<tr><td style="font-weight:600">${getMat(sku).name}</td><td class="mono">${qty}</td><td class="mono" style="${!ok?'color:var(--red);font-weight:600':''}">${av}</td><td>${ok?'<span class="badge bg">OK</span>':'<span class="badge br">Insuffisant</span>'}</td></tr>`;}).join('')}
     </tbody></table>
-    ${!allOk?'<div style="margin-top:10px;padding:10px;background:var(--red-bg);border-radius:6px;font-size:12px;color:var(--red);font-weight:600">⚠ Certaines matières sont insuffisantes.</div>':''}
+    ${!allOk?`<div style="margin-top:10px;padding:10px;background:var(--red-bg);border-radius:6px;font-size:12px;color:var(--red);font-weight:600">⚠ Certaines matières sont insuffisantes. <button class="btn btn-xs btn-danger" onclick="openPOFromMissing(${JSON.stringify(Object.entries(bom).filter(([s,q])=>getQty(s)<q).map(([s,q])=>s))})" style="margin-left:8px">Créer PO pour les manquants</button></div>`:''}
   `:'';
+}
+function openProdModal(){
+  editingProdId=null;
+  const items=[...selP].map(sku=>S.products.find(p=>p.sku===sku)).filter(Boolean);
+  if(!items.length)return;
+  populateProdModal(items);
   const d=new Date();d.setDate(d.getDate()+5);
   document.getElementById('prodDate').value=d.toISOString().split('T')[0];
   document.getElementById('prodNote').value='';
   document.getElementById('prodModal').classList.add('open');
 }
-function confirmProduction(){
-  const items=[...selP].map(sku=>S.products.find(p=>p.sku===sku)).filter(Boolean);
-  items.forEach(p=>{getRecipe(p.sku).forEach(r=>{const m=S.materials.find(m=>m.sku===r.sku);if(m)m.qty=Math.max(0,m.qty-r.qty);});});
-  const id='PROD-'+String(S.pc).padStart(3,'0');S.pc++;
-  S.productions.push({id,type:items[0]?.type||'best-seller',products:items.map(p=>({name:p.name,qty:1})),status:'En production',date:document.getElementById('prodDate').value,note:document.getElementById('prodNote').value,atelier:document.getElementById('prodAtelier').value,createdAt:today()});
-  selP.clear();save();closeModal('prodModal');nav('production');
+function openProdModalFromNeg(){
+  editingProdId=null;
+  const items=S.products.filter(p=>p.active&&(p.stockMRP||0)<0);
+  if(!items.length)return;
+  selP=new Set(items.map(p=>p.sku));
+  populateProdModal(items);
+  const d=new Date();d.setDate(d.getDate()+5);
+  document.getElementById('prodDate').value=d.toISOString().split('T')[0];
+  document.getElementById('prodNote').value='';
+  document.getElementById('prodModal').classList.add('open');
+}
+function openEditProd(id){
+  editingProdId=id;
+  const o=S.productions.find(o=>o.id===id);if(!o)return;
+  const items=o.products.map(p=>{const found=S.products.find(pr=>pr.name===p.name);return found||{name:p.name,type:'best-seller',sku:''};});
+  populateProdModal(items,true);
+  document.getElementById('prodDate').value=o.date||'';
+  document.getElementById('prodNote').value=o.note||'';
+  document.getElementById('prodAtelier').value=o.atelier||'';
+  document.getElementById('prodModal').classList.add('open');
+}
+function saveProd(){
+  const date=document.getElementById('prodDate').value;
+  const note=document.getElementById('prodNote').value;
+  const atelier=document.getElementById('prodAtelier').value;
+  if(editingProdId){
+    const o=S.productions.find(o=>o.id===editingProdId);
+    if(o){o.date=date;o.note=note;o.atelier=atelier;save();closeModal('prodModal');render();}
+  } else {
+    const items=[...selP].map(sku=>S.products.find(p=>p.sku===sku)).filter(Boolean);
+    items.forEach(p=>{getRecipe(p.sku).forEach(r=>{const m=S.materials.find(m=>m.sku===r.sku);if(m)m.qty-=r.qty;});});
+    const id='PROD-'+String(S.pc).padStart(3,'0');S.pc++;
+    S.productions.push({id,type:items[0]?.type||'best-seller',products:items.map(p=>({name:p.name,qty:1})),status:'En production',date,note,atelier,createdAt:today(),materialsDeducted:true});
+    selP.clear();save();closeModal('prodModal');nav('production');
+  }
+}
+function updPrSt(id,val){
+  const o=S.productions.find(o=>o.id===id);
+  if(!o)return;
+  const wasNotDone=o.status!=='Terminé — prêt à expédier';
+  o.status=val;
+  if(val==='Terminé — prêt à expédier'&&wasNotDone){
+    o.products.forEach(op=>{const p=S.products.find(p=>p.name===op.name);if(p){p.stockMRP=(p.stockMRP||0)+op.qty;}});
+  }
+  save();render();
+}
+function deleteProd(id){
+  const o=S.productions.find(o=>o.id===id);
+  if(!o||!confirm(`Supprimer l'ordre ${o.id} ? Les stocks seront restaurés.`))return;
+  // Restaurer les matières si elles avaient été déduites
+  if(o.materialsDeducted){
+    o.products.forEach(op=>{
+      const p=S.products.find(p=>p.name===op.name);if(!p)return;
+      getRecipe(p.sku).forEach(r=>{const m=S.materials.find(m=>m.sku===r.sku);if(m)m.qty+=r.qty;});
+    });
+  }
+  // Annuler le +1 stock MRP si l'ordre était terminé
+  if(o.status==='Terminé — prêt à expédier'){
+    o.products.forEach(op=>{const p=S.products.find(p=>p.name===op.name);if(p)p.stockMRP=(p.stockMRP||0)-op.qty;});
+  }
+  S.productions=S.productions.filter(x=>x.id!==id);
+  save();render();
 }
 
-// ─── MODAL PO ───────────────────────────────────────────────
+// ─── MODAL PO ────────────────────────────────────────────────
 function openPOModal(){
+  editingPoId=null;
   const skus=[...selM];if(!skus.length)return;
-  const bySup={};skus.forEach(sku=>{const m=S.materials.find(m=>m.sku===sku);if(m){if(!bySup[m.supplier])bySup[m.supplier]=[];bySup[m.supplier].push(m);}});
+  buildPOModal(skus);
+  document.getElementById('poModalTitle').textContent='Créer des Purchase Orders';
+  document.getElementById('poModal').classList.add('open');
+}
+function openPOFromMissing(skus){
+  editingPoId=null;
+  closeModal('prodModal');
+  buildPOModal(skus);
+  document.getElementById('poModalTitle').textContent='PO pour matières manquantes';
+  document.getElementById('poModal').classList.add('open');
+}
+function openEditPO(id){
+  editingPoId=id;
+  const o=S.purchaseOrders.find(o=>o.id===id);if(!o)return;
+  document.getElementById('poModalTitle').textContent='Modifier le Purchase Order '+o.id;
+  const sup=getSup(o.sid);
+  const d=new Date();d.setDate(d.getDate()+14);
+  document.getElementById('poModalBody').innerHTML=`<div style="border:1px solid var(--border);border-radius:6px;padding:14px">
+    <div style="font-size:14px;font-weight:700;margin-bottom:12px">${sup.emoji} ${sup.name}</div>
+    <table style="font-size:12px;margin-bottom:12px"><thead><tr><th>Matière</th><th>Qté commandée</th><th>Coût unit.</th></tr></thead><tbody>
+    ${o.items.map(i=>`<tr><td style="font-weight:600">${getMat(i.sku).name}</td><td><input type="number" id="pq-${i.sku.replace(/[^a-z0-9]/gi,'-')}" value="${i.qty}" min="1" style="width:70px;padding:4px 6px;font-size:12px"></td><td class="mono">${i.cost.toFixed(2)}€</td></tr>`).join('')}
+    </tbody></table>
+    <div class="frow"><label>Date de livraison souhaitée</label><input type="date" id="pd-${o.sid}" value="${o.delivDate||''}"></div>
+    <div class="frow"><label>Note</label><input type="text" id="pn-${o.sid}" value="${o.note||''}"></div>
+  </div>`;
+  document.getElementById('poModal').classList.add('open');
+}
+function buildPOModal(skus){
+  const bySup={};
+  skus.forEach(sku=>{const m=S.materials.find(m=>m.sku===sku);if(m){if(!bySup[m.supplier])bySup[m.supplier]=[];bySup[m.supplier].push(m);}});
   const n=Object.keys(bySup).length;
   document.getElementById('poModalBody').innerHTML=`
-    <div style="background:var(--blue-bg);border:1px solid #A9CCE3;border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--blue);font-weight:600">${n} PO sera/seront créé(s) — 1 par fournisseur</div>
+    <div class="info-tip">${n} PO sera/seront créé(s) — 1 par fournisseur</div>
     ${Object.entries(bySup).map(([sid,mats])=>{const sup=getSup(sid);const d=new Date();d.setDate(d.getDate()+14);return`<div style="border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:12px">
-      <div style="font-size:14px;font-weight:700;margin-bottom:12px">${sup.emoji} ${sup.name} <span style="font-size:11px;color:var(--text3);font-weight:400">· Délai habituel : ${sup.delai}</span></div>
-      <table style="font-size:12px;margin-bottom:12px"><thead><tr><th>Matière</th><th>Qté à commander</th><th>Coût unit.</th></tr></thead><tbody>
-      ${mats.map(m=>`<tr><td style="font-weight:600">${m.name}</td><td><input type="number" id="pq-${m.sku}" value="1" min="1" style="width:70px;padding:4px 6px;font-size:12px"></td><td class="mono">${m.cost.toFixed(2)}€</td></tr>`).join('')}
+      <div style="font-size:14px;font-weight:700;margin-bottom:12px">${sup.emoji} ${sup.name} <span style="font-size:11px;color:var(--text3);font-weight:400">· Délai : ${sup.delai}</span></div>
+      <table style="font-size:12px;margin-bottom:12px"><thead><tr><th>Matière</th><th>Qté à commander</th><th>Coût</th></tr></thead><tbody>
+      ${mats.map(m=>`<tr><td style="font-weight:600">${m.name}</td><td><input type="number" id="pq-${m.sku.replace(/[^a-z0-9]/gi,'-')}" value="1" min="1" style="width:70px;padding:4px 6px;font-size:12px"></td><td class="mono">${m.cost.toFixed(2)}€</td></tr>`).join('')}
       </tbody></table>
       <div class="frow"><label>Date de livraison souhaitée</label><input type="date" id="pd-${sid}" value="${d.toISOString().split('T')[0]}"></div>
       <div class="frow"><label>Note</label><input type="text" id="pn-${sid}" placeholder="ex: urgent..."></div>
     </div>`;}).join('')}`;
-  document.getElementById('poModal').classList.add('open');
 }
-function confirmPO(){
-  const skus=[...selM];const bySup={};
-  skus.forEach(sku=>{const m=S.materials.find(m=>m.sku===sku);if(m){if(!bySup[m.supplier])bySup[m.supplier]=[];bySup[m.supplier].push(m);}});
-  Object.entries(bySup).forEach(([sid,mats])=>{
-    const id='PO-'+String(S.poc).padStart(3,'0');S.poc++;
-    S.purchaseOrders.push({id,sid,items:mats.map(m=>({sku:m.sku,qty:parseInt(document.getElementById(`pq-${m.sku}`)?.value)||1,cost:m.cost})),status:'Envoyé au fournisseur',delivDate:document.getElementById(`pd-${sid}`)?.value||'',note:document.getElementById(`pn-${sid}`)?.value||'',createdAt:today()});
-  });
-  selM.clear();save();closeModal('poModal');nav('po');
+function savePO(){
+  if(editingPoId){
+    // Édition
+    const o=S.purchaseOrders.find(o=>o.id===editingPoId);if(!o)return;
+    o.items=o.items.map(i=>({...i,qty:parseInt(document.getElementById(`pq-${i.sku.replace(/[^a-z0-9]/gi,'-')}`)?.value)||i.qty}));
+    o.delivDate=document.getElementById(`pd-${o.sid}`)?.value||o.delivDate;
+    o.note=document.getElementById(`pn-${o.sid}`)?.value||o.note;
+    save();closeModal('poModal');render();
+  } else {
+    const skus=[...selM];const bySup={};
+    skus.forEach(sku=>{const m=S.materials.find(m=>m.sku===sku);if(m){if(!bySup[m.supplier])bySup[m.supplier]=[];bySup[m.supplier].push(m);}});
+    Object.entries(bySup).forEach(([sid,mats])=>{
+      const id='PO-'+String(S.poc).padStart(3,'0');S.poc++;
+      S.purchaseOrders.push({id,sid,items:mats.map(m=>({sku:m.sku,qty:parseInt(document.getElementById(`pq-${m.sku.replace(/[^a-z0-9]/gi,'-')}`)?.value)||1,cost:m.cost})),status:'Envoyé au fournisseur',delivDate:document.getElementById(`pd-${sid}`)?.value||'',note:document.getElementById(`pn-${sid}`)?.value||'',createdAt:today()});
+    });
+    selM.clear();save();closeModal('poModal');nav('po');
+  }
+}
+function deletePO(id){
+  const o=S.purchaseOrders.find(o=>o.id===id);
+  if(!o||!confirm(`Supprimer le PO ${o.id} ?${o.status==='Clôturé'?' Les stocks reçus seront annulés.':''}`))return;
+  // Si clôturé, annuler les stocks réceptionnés
+  if(o.status==='Clôturé'){
+    o.items.forEach(i=>{const m=S.materials.find(m=>m.sku===i.sku);if(m)m.qty=Math.max(0,m.qty-i.qty);});
+  }
+  S.purchaseOrders=S.purchaseOrders.filter(x=>x.id!==id);
+  save();render();
 }
 
 // ─── MODAL RÉCEPTION ────────────────────────────────────────
+let curRecId=null;
 function openRecModal(id){
   curRecId=id;const o=S.purchaseOrders.find(o=>o.id===id);if(!o)return;
   const sup=getSup(o.sid);
   document.getElementById('recBody').innerHTML=`
     <div style="font-size:14px;font-weight:700;margin-bottom:4px">${sup.emoji} ${sup.name} — ${o.id}</div>
     <div class="mono" style="margin-bottom:16px">Livraison souhaitée : ${fd(o.delivDate)}</div>
-    <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px">Confirmez les quantités reçues</div>
     <table><thead><tr><th>Matière</th><th>Commandé</th><th>Qté reçue</th></tr></thead><tbody>
-    ${o.items.map(i=>`<tr><td style="font-weight:600">${getMat(i.sku).name}</td><td class="mono">${i.qty}</td><td><input type="number" id="rc-${i.sku}" value="${i.qty}" min="0" style="width:80px;padding:6px 8px;font-size:13px"></td></tr>`).join('')}
+    ${o.items.map(i=>`<tr><td style="font-weight:600">${getMat(i.sku).name}</td><td class="mono">${i.qty}</td><td><input type="number" id="rc-${i.sku.replace(/[^a-z0-9]/gi,'-')}" value="${i.qty}" min="0" style="width:80px;padding:6px 8px;font-size:13px"></td></tr>`).join('')}
     </tbody></table>
     <div style="margin-top:14px;padding:10px;background:var(--green-bg);border-radius:6px;font-size:12px;color:var(--green);font-weight:600">✓ Le stock sera mis à jour avec les quantités reçues.</div>`;
   document.getElementById('recModal').classList.add('open');
 }
 function confirmReception(){
   const o=S.purchaseOrders.find(o=>o.id===curRecId);if(!o)return;
-  o.items.forEach(i=>{const rcv=parseInt(document.getElementById(`rc-${i.sku}`)?.value)||0;const m=S.materials.find(m=>m.sku===i.sku);if(m)m.qty+=rcv;});
+  o.items.forEach(i=>{const rcv=parseInt(document.getElementById(`rc-${i.sku.replace(/[^a-z0-9]/gi,'-')}`)?.value)||0;const m=S.materials.find(m=>m.sku===i.sku);if(m)m.qty+=rcv;});
   o.status='Clôturé';save();closeModal('recModal');nav('po');
 }
 
-// ─── MODAL FOURNISSEUR ───────────────────────────────────────
-function openAddFournisseur(){
-  editingSupId=null;
-  document.getElementById('supModalTitle').textContent='Nouveau fournisseur';
-  ['supName','supEmoji','supCat','supContact','supDelai','supMoq','supNotes'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('supModal').classList.add('open');
+// ─── MATIÈRES ADD/EDIT ───────────────────────────────────────
+let editingMatSku=null;
+function openAddMat(){
+  editingMatSku=null;
+  document.getElementById('matModalTitle').textContent='Nouvelle matière première';
+  document.getElementById('matDeleteBtn').style.display='none';
+  document.getElementById('matDuplicateBtn').style.display='none';
+  ['matName','matSku','matCost','matQty','matReorder'].forEach(id=>{document.getElementById(id).value='';document.getElementById(id).style.borderColor='';});
+  document.getElementById('matSku').placeholder='ex: MAT-HOO-BLA-S';
+  document.getElementById('matCat').value='Hoodie';
+  document.getElementById('matSupplier').innerHTML=S.suppliers.map(s=>`<option value="${s.id}">${s.emoji} ${s.name}</option>`).join('');
+  document.getElementById('matModal').classList.add('open');
 }
-function openEditFournisseur(id){
-  editingSupId=id;
-  const sup=getSup(id);
+function openEditMat(sku){
+  const m=S.materials.find(m=>m.sku===sku);if(!m)return;
+  editingMatSku=sku;
+  document.getElementById('matModalTitle').textContent='Modifier la matière';
+  document.getElementById('matDeleteBtn').style.display='inline-flex';
+  document.getElementById('matDuplicateBtn').style.display='inline-flex';
+  document.getElementById('matName').value=m.name;
+  document.getElementById('matSku').value=m.sku;
+  document.getElementById('matCat').value=m.cat;
+  document.getElementById('matCost').value=m.cost;
+  document.getElementById('matQty').value=m.qty;
+  document.getElementById('matReorder').value=m.reorder;
+  document.getElementById('matSupplier').innerHTML=S.suppliers.map(s=>`<option value="${s.id}" ${s.id===m.supplier?'selected':''}>${s.emoji} ${s.name}</option>`).join('');
+  document.getElementById('matModal').classList.add('open');
+}
+function duplicateMat(){
+  const name=document.getElementById('matName').value;
+  editingMatSku=null;
+  document.getElementById('matModalTitle').textContent='Dupliquer — entrez un nouveau SKU';
+  document.getElementById('matDeleteBtn').style.display='none';
+  document.getElementById('matDuplicateBtn').style.display='none';
+  document.getElementById('matName').value=name+' (copie)';
+  document.getElementById('matSku').value='';
+  document.getElementById('matSku').style.borderColor='var(--amber)';
+  document.getElementById('matSku').placeholder='⚠ Nouveau SKU unique obligatoire';
+  document.getElementById('matSku').focus();
+}
+function saveMat(){
+  const name=document.getElementById('matName').value.trim();
+  const sku=document.getElementById('matSku').value.trim();
+  if(!name||!sku){alert('Le nom et le SKU sont obligatoires');return;}
+  const data={name,sku,cat:document.getElementById('matCat').value,supplier:document.getElementById('matSupplier').value,cost:parseFloat(document.getElementById('matCost').value)||0,qty:parseInt(document.getElementById('matQty').value)||0,reorder:parseInt(document.getElementById('matReorder').value)||0};
+  if(editingMatSku){const idx=S.materials.findIndex(m=>m.sku===editingMatSku);if(idx>=0)S.materials[idx]=data;}
+  else{if(S.materials.find(m=>m.sku===sku)){alert('SKU déjà existant');return;}S.materials.push(data);}
+  save();closeModal('matModal');render();
+}
+function deleteMat(){
+  if(!editingMatSku||!confirm('Supprimer cette matière ?'))return;
+  S.materials=S.materials.filter(m=>m.sku!==editingMatSku);
+  save();closeModal('matModal');render();
+}
+
+// ─── FOURNISSEURS ────────────────────────────────────────────
+let editingSupId=null;
+function openAddSup(){editingSupId=null;document.getElementById('supModalTitle').textContent='Nouveau fournisseur';['supName','supEmoji','supCat','supContact','supDelai','supMoq','supNotes'].forEach(id=>document.getElementById(id).value='');document.getElementById('supModal').classList.add('open');}
+function openEditSup(id){
+  editingSupId=id;const sup=getSup(id);
   document.getElementById('supModalTitle').textContent='Modifier le fournisseur';
-  document.getElementById('supName').value=sup.name||'';
-  document.getElementById('supEmoji').value=sup.emoji||'';
-  document.getElementById('supCat').value=sup.cat||'';
-  document.getElementById('supContact').value=sup.contact||'';
-  document.getElementById('supDelai').value=sup.delai||'';
-  document.getElementById('supMoq').value=sup.moq||'';
-  document.getElementById('supNotes').value=sup.notes||'';
+  document.getElementById('supName').value=sup.name||'';document.getElementById('supEmoji').value=sup.emoji||'';document.getElementById('supCat').value=sup.cat||'';document.getElementById('supContact').value=sup.contact||'';document.getElementById('supDelai').value=sup.delai||'';document.getElementById('supMoq').value=sup.moq||'';document.getElementById('supNotes').value=sup.notes||'';
   document.getElementById('supModal').classList.add('open');
 }
 function saveFournisseur(){
-  const name=document.getElementById('supName').value.trim();
-  if(!name)return alert('Le nom est obligatoire');
-  if(editingSupId){
-    const sup=S.suppliers.find(s=>s.id===editingSupId);
-    if(sup){Object.assign(sup,{name,emoji:document.getElementById('supEmoji').value,cat:document.getElementById('supCat').value,contact:document.getElementById('supContact').value,delai:document.getElementById('supDelai').value,moq:document.getElementById('supMoq').value,notes:document.getElementById('supNotes').value});}
-  } else {
-    const id=name.toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-');
-    S.suppliers.push({id,name,emoji:document.getElementById('supEmoji').value||'🏭',cat:document.getElementById('supCat').value,contact:document.getElementById('supContact').value,delai:document.getElementById('supDelai').value,moq:document.getElementById('supMoq').value,notes:document.getElementById('supNotes').value,color:'#EEEDE8'});
-  }
+  const name=document.getElementById('supName').value.trim();if(!name)return alert('Nom obligatoire');
+  const data={name,emoji:document.getElementById('supEmoji').value||'🏭',cat:document.getElementById('supCat').value,contact:document.getElementById('supContact').value,delai:document.getElementById('supDelai').value,moq:document.getElementById('supMoq').value,notes:document.getElementById('supNotes').value};
+  if(editingSupId){const s=S.suppliers.find(s=>s.id===editingSupId);if(s)Object.assign(s,data);}
+  else{const id=name.toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-');S.suppliers.push({id,...data,color:'#EEEDE8'});}
   save();closeModal('supModal');render();
 }
 
-// ─── MODAL ATELIER ───────────────────────────────────────────
-function openAddAtelier(){
-  editingAtelierId=null;
-  document.getElementById('atelierModalTitle').textContent='Nouvel atelier';
-  ['atelierName','atelierEmoji','atelierSpec','atelierContact','atelierDelai','atelierCapa','atelierLoc','atelierNotes'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('atelierStatus').value='actif';
-  document.getElementById('atelierModal').classList.add('open');
-}
+// ─── ATELIERS ────────────────────────────────────────────────
+let editingAtelierId=null;
+function openAddAtelier(){editingAtelierId=null;document.getElementById('atelierModalTitle').textContent='Nouvel atelier';['atelierName','atelierEmoji','atelierSpec','atelierContact','atelierDelai','atelierCapa','atelierLoc','atelierNotes'].forEach(id=>document.getElementById(id).value='');document.getElementById('atelierStatus').value='actif';document.getElementById('atelierModal').classList.add('open');}
 function openEditAtelier(id){
-  editingAtelierId=id;
-  const a=getAtelier(id);
+  editingAtelierId=id;const a=getAtelier(id);
   document.getElementById('atelierModalTitle').textContent='Modifier l\'atelier';
-  document.getElementById('atelierName').value=a.name||'';
-  document.getElementById('atelierEmoji').value=a.emoji||'';
-  document.getElementById('atelierSpec').value=a.spec||'';
-  document.getElementById('atelierContact').value=a.contact||'';
-  document.getElementById('atelierDelai').value=a.delai||'';
-  document.getElementById('atelierCapa').value=a.capa||'';
-  document.getElementById('atelierLoc').value=a.loc||'';
-  document.getElementById('atelierStatus').value=a.status||'actif';
-  document.getElementById('atelierNotes').value=a.notes||'';
+  document.getElementById('atelierName').value=a.name||'';document.getElementById('atelierEmoji').value=a.emoji||'';document.getElementById('atelierSpec').value=a.spec||'';document.getElementById('atelierContact').value=a.contact||'';document.getElementById('atelierDelai').value=a.delai||'';document.getElementById('atelierCapa').value=a.capa||'';document.getElementById('atelierLoc').value=a.loc||'';document.getElementById('atelierStatus').value=a.status||'actif';document.getElementById('atelierNotes').value=a.notes||'';
   document.getElementById('atelierModal').classList.add('open');
 }
 function saveAtelier(){
-  const name=document.getElementById('atelierName').value.trim();
-  if(!name)return alert('Le nom est obligatoire');
+  const name=document.getElementById('atelierName').value.trim();if(!name)return alert('Nom obligatoire');
   const data={name,emoji:document.getElementById('atelierEmoji').value||'✂️',spec:document.getElementById('atelierSpec').value,contact:document.getElementById('atelierContact').value,delai:document.getElementById('atelierDelai').value,capa:document.getElementById('atelierCapa').value,loc:document.getElementById('atelierLoc').value,status:document.getElementById('atelierStatus').value,notes:document.getElementById('atelierNotes').value};
-  if(editingAtelierId){
-    const a=S.ateliers.find(a=>a.id===editingAtelierId);
-    if(a)Object.assign(a,data);
-  } else {
-    const id=name.toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-');
-    S.ateliers.push({id,...data});
-  }
+  if(editingAtelierId){const a=S.ateliers.find(a=>a.id===editingAtelierId);if(a)Object.assign(a,data);}
+  else{const id=name.toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-');S.ateliers.push({id,...data});}
   save();closeModal('atelierModal');render();
 }
 
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 
-function handleMatClick(event, sku){
-  if(event.target.type==='checkbox'||event.target.type==='number') return;
-  openEditMat(sku);
-}
-
-// ─── CLOCK ──────────────────────────────────────────────────
+// ─── CLOCK ───────────────────────────────────────────────────
 function updateClock(){const n=new Date();document.getElementById('clock').textContent=n.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'})+' · '+n.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});}
 setInterval(updateClock,1000);updateClock();
 
-// ─── INIT ───────────────────────────────────────────────────
+// ─── INIT ────────────────────────────────────────────────────
 initAuth();
 nav('dashboard');
 syncShopify();
