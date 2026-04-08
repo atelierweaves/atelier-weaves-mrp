@@ -311,6 +311,7 @@ input[type="checkbox"]{width:15px;height:15px;cursor:pointer;accent-color:var(--
 <script>
 // ─── SUPABASE ────────────────────────────────────────────────
 const SUPA_URL = 'https://inclyfyvhqqpgdrwzyib.supabase.co';
+const MIN_ORDER_NUMBER = 6500; // Prise en compte des stocks à partir de cette commande
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImluY2x5Znl2aHFxcGdkcnd6eWliIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5OTIyNjIsImV4cCI6MjA5MDU2ODI2Mn0.nrv6jaJfBlHluBX6h9wjsf53kcgZgxqdNt5ZVnzx73A';
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 
@@ -603,7 +604,8 @@ async function syncOrders(){
     // Déduire le stock MRP des nouvelles commandes
     const {data:existing}=await sb.from('shopify_orders').select('shopify_id');
     const knownIds=new Set((existing||[]).map(o=>o.shopify_id));
-    const newOrders=data.orders.filter(o=>!knownIds.has(o.id));
+    // Ignorer les commandes antérieures à #6500
+    const newOrders=data.orders.filter(o=>!knownIds.has(o.id)&&parseInt(o.order_number||0)>=MIN_ORDER_NUMBER);
     // Mettre à jour stock_mrp pour les nouveaux
     for(const order of newOrders){
       for(const item of (order.line_items||[])){
@@ -1182,8 +1184,18 @@ function openPOModal(){
   document.getElementById('poModal').classList.add('open');
 }
 function openPOFromMissing(skus){
-  editingPoId=null;closeModal('prodModal');
-  const bySup={};skus.forEach(sku=>{const m=S.materials.find(m=>m.sku===sku);if(m){const sid=m.supplier_id||m.supplier;if(!bySup[sid])bySup[sid]=[];bySup[sid].push(m);}});
+  console.log('[PO Missing] skus reçus:', skus);
+  if(!skus||skus.length===0){alert('Aucune matière manquante à commander.');return;}
+  editingPoId=null;
+  const bySup={};
+  skus.forEach(sku=>{
+    const m=S.materials.find(m=>m.sku===sku);
+    console.log('[PO Missing] matière trouvée pour', sku, ':', m);
+    if(m){const sid=m.supplier_id||m.supplier;if(!bySup[sid])bySup[sid]=[];bySup[sid].push(m);}
+  });
+  console.log('[PO Missing] bySup:', bySup);
+  if(Object.keys(bySup).length===0){alert('Impossible de trouver les fournisseurs pour ces matières. Vérifiez la console.');return;}
+  closeModal('prodModal');
   document.getElementById('poModalTitle').textContent='PO pour matières manquantes';
   document.getElementById('poModalBody').innerHTML=`<div class="info-tip">${Object.keys(bySup).length} PO pour les matières manquantes</div>`+buildPOModalHTML(bySup);
   document.getElementById('poModal').classList.add('open');
