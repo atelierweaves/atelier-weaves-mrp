@@ -1044,6 +1044,7 @@ async function saveRecette(){
 }
 
 // ─── MODAL PRODUCTION ────────────────────────────────────────
+let _missingSkus=[];
 function populateProdModal(items,editing=false){
   document.getElementById('prodModalTitle').textContent=editing?'Modifier l\'ordre':'Créer un ordre de production';
   document.getElementById('prodItems').innerHTML=`<div style="background:var(--surface2);border-radius:6px;padding:12px 14px">
@@ -1051,8 +1052,9 @@ function populateProdModal(items,editing=false){
     ${items.map(p=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)"><span style="font-size:13px;font-weight:600">${p.name}</span></div>`).join('')}
   </div>`;
   document.getElementById('prodAtelier').innerHTML=S.ateliers.filter(a=>a.status==='actif').map(a=>`<option value="${a.id}">${a.emoji} ${a.name}</option>`).join('');
-  const bom={};let _missingSkus=[];items.forEach(p=>{const needed=Math.abs(p.stockMRP||1);getRecipe(p.sku).forEach(r=>{bom[r.sku]=(bom[r.sku]||0)+(r.qty*needed);});});
+  const bom={};items.forEach(p=>{const needed=Math.abs(p.stockMRP||1);getRecipe(p.sku).forEach(r=>{bom[r.sku]=(bom[r.sku]||0)+(r.qty*needed);});});
   const allOk=Object.entries(bom).every(([s,q])=>getQty(s)>=q);
+  _missingSkus=Object.entries(bom).filter(([s,q])=>getQty(s)<q).map(([s])=>s);
   document.getElementById('prodBom').innerHTML=Object.keys(bom).length?`
     <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Matières</div>
     <table><thead><tr><th>Matière</th><th>Nécessaire</th><th>Stock</th><th>Statut</th></tr></thead><tbody>
