@@ -1160,7 +1160,6 @@ async function deleteProd(id){
 }
 
 // ─── MODAL PO ────────────────────────────────────────────────
-let editingPoId=null;
 function buildPOModalHTML(itemsBySup){
   return Object.entries(itemsBySup).map(([sid,mats])=>{
     const sup=getSup(sid);const d=new Date();d.setDate(d.getDate()+14);
