@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -1052,14 +1051,14 @@ function populateProdModal(items,editing=false){
     ${items.map(p=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border)"><span style="font-size:13px;font-weight:600">${p.name}</span></div>`).join('')}
   </div>`;
   document.getElementById('prodAtelier').innerHTML=S.ateliers.filter(a=>a.status==='actif').map(a=>`<option value="${a.id}">${a.emoji} ${a.name}</option>`).join('');
-  const bom={};items.forEach(p=>{getRecipe(p.sku).forEach(r=>{bom[r.sku]=(bom[r.sku]||0)+r.qty;});});
+  const bom={};let _missingSkus=[];items.forEach(p=>{const needed=Math.abs(p.stockMRP||1);getRecipe(p.sku).forEach(r=>{bom[r.sku]=(bom[r.sku]||0)+(r.qty*needed);});});
   const allOk=Object.entries(bom).every(([s,q])=>getQty(s)>=q);
   document.getElementById('prodBom').innerHTML=Object.keys(bom).length?`
     <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Matières</div>
     <table><thead><tr><th>Matière</th><th>Nécessaire</th><th>Stock</th><th>Statut</th></tr></thead><tbody>
     ${Object.entries(bom).map(([sku,qty])=>{const av=getQty(sku);const ok=av>=qty;return`<tr><td style="font-weight:600">${getMat(sku).name}</td><td class="mono">${qty}</td><td class="mono" style="${!ok?'color:var(--red);font-weight:600':''}">${av}</td><td>${ok?'<span class="badge bg">OK</span>':'<span class="badge br">Insuffisant</span>'}</td></tr>`;}).join('')}
     </tbody></table>
-    ${!allOk?`<div style="margin-top:10px;padding:10px;background:var(--red-bg);border-radius:6px;font-size:12px;color:var(--red);font-weight:600">⚠ Matières insuffisantes. <button class="btn btn-xs btn-danger" onclick="openPOFromMissing(${JSON.stringify(Object.entries(bom).filter(([s,q])=>getQty(s)<q).map(([s])=>s))})" style="margin-left:8px">Créer PO pour les manquants</button></div>`:''}
+    ${!allOk?`<div style="margin-top:10px;padding:10px;background:var(--red-bg);border-radius:6px;font-size:12px;color:var(--red);font-weight:600">⚠ Matières insuffisantes. <button class="btn btn-xs btn-danger" onclick="openPOFromMissing(_missingSkus)" style="margin-left:8px">Créer PO pour les manquants</button></div>`:''}
   `:'';
 }
 function openProdModal(){
