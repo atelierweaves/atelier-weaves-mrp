@@ -628,13 +628,15 @@ async function syncOrders(){
     if(toInsert.length>0)await sb.from('shopify_orders').upsert(toInsert,{onConflict:'shopify_id'});
     // Recharger
     const {data:orders}=await sb.from('shopify_orders').select('*').order('created_at',{ascending:false}).limit(250);
-    S.shopifyOrders=(orders||[]).map(o=>({
-      id:o.shopify_id,order_number:o.order_number,name:o.name,
-      created_at:o.created_at,financial_status:o.financial_status,
-      fulfillment_status:o.fulfillment_status,total_price:o.total_price,
-      billing_address:{first_name:o.customer_first_name,last_name:o.customer_last_name},
-      line_items:o.line_items||[]
-    }));
+    S.shopifyOrders=(orders||[])
+      .filter(o=>parseInt(o.order_number||0)>=MIN_ORDER_NUMBER)
+      .map(o=>({
+        id:o.shopify_id,order_number:o.order_number,name:o.name,
+        created_at:o.created_at,financial_status:o.financial_status,
+        fulfillment_status:o.fulfillment_status,total_price:o.total_price,
+        billing_address:{first_name:o.customer_first_name,last_name:o.customer_last_name},
+        line_items:o.line_items||[]
+      }));
     render();
   }catch(e){console.error('syncOrders error:',e);}
 }
@@ -1046,7 +1048,7 @@ async function saveRecette(){
 }
 
 // ─── MODAL PRODUCTION ────────────────────────────────────────
-let _missingSkus=[];
+let _missingSkus=[];let _missingMats={}; // {sku: gapQty}
 function populateProdModal(items,editing=false){
   document.getElementById('prodModalTitle').textContent=editing?'Modifier l\'ordre':'Créer un ordre de production';
   document.getElementById('prodItems').innerHTML=`<div style="background:var(--surface2);border-radius:6px;padding:12px 14px">
@@ -1057,6 +1059,7 @@ function populateProdModal(items,editing=false){
   const bom={};items.forEach(p=>{const needed=Math.abs(p.stockMRP||1);getRecipe(p.sku).forEach(r=>{bom[r.sku]=(bom[r.sku]||0)+(r.qty*needed);});});
   const allOk=Object.entries(bom).every(([s,q])=>getQty(s)>=q);
   _missingSkus=Object.entries(bom).filter(([s,q])=>getQty(s)<q).map(([s])=>s);
+  _missingMats={};Object.entries(bom).filter(([s,q])=>getQty(s)<q).forEach(([s,q])=>{_missingMats[s]=q-getQty(s);});
   document.getElementById('prodBom').innerHTML=Object.keys(bom).length?`
     <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Matières</div>
     <table><thead><tr><th>Matière</th><th>Nécessaire</th><th>Stock</th><th>Statut</th></tr></thead><tbody>
@@ -1163,13 +1166,13 @@ async function deleteProd(id){
 }
 
 // ─── MODAL PO ────────────────────────────────────────────────
-function buildPOModalHTML(itemsBySup){
+function buildPOModalHTML(itemsBySup, defaultQtys={}){
   return Object.entries(itemsBySup).map(([sid,mats])=>{
     const sup=getSup(sid);const d=new Date();d.setDate(d.getDate()+14);
     return`<div style="border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:12px">
       <div style="font-size:14px;font-weight:700;margin-bottom:12px">${sup.emoji} ${sup.name} <span style="font-size:11px;color:var(--text3);font-weight:400">· Délai : ${sup.delai}</span></div>
       <table style="font-size:12px;margin-bottom:12px"><thead><tr><th>Matière</th><th>Qté</th><th>Coût</th></tr></thead><tbody>
-      ${mats.map(m=>`<tr><td style="font-weight:600">${m.name}</td><td><input type="number" id="pq-${m.sku.replace(/[^a-z0-9]/gi,'-')}" value="1" min="1" style="width:70px;padding:4px 6px;font-size:12px"></td><td class="mono">${parseFloat(m.cost).toFixed(2)}€</td></tr>`).join('')}
+      ${mats.map(m=>`<tr><td style="font-weight:600">${m.name}</td><td><input type="number" id="pq-${m.sku.replace(/[^a-z0-9]/gi,'-')}" value="${defaultQtys[m.sku]||1}" min="1" style="width:70px;padding:4px 6px;font-size:12px"></td><td class="mono">${parseFloat(m.cost).toFixed(2)}€</td></tr>`).join('')}
       </tbody></table>
       <div class="frow"><label>Livraison souhaitée</label><input type="date" id="pd-${sid}" value="${d.toISOString().split('T')[0]}"></div>
       <div class="frow"><label>Note</label><input type="text" id="pn-${sid}" placeholder="ex: urgent..."></div>
@@ -1195,9 +1198,11 @@ function openPOFromMissing(skus){
   });
   console.log('[PO Missing] bySup:', bySup);
   if(Object.keys(bySup).length===0){alert('Impossible de trouver les fournisseurs pour ces matières. Vérifiez la console.');return;}
+  // Renseigner selM pour que savePO puisse créer les PO
+  selM=new Set(skus);
   closeModal('prodModal');
   document.getElementById('poModalTitle').textContent='PO pour matières manquantes';
-  document.getElementById('poModalBody').innerHTML=`<div class="info-tip">${Object.keys(bySup).length} PO pour les matières manquantes</div>`+buildPOModalHTML(bySup);
+  document.getElementById('poModalBody').innerHTML=`<div class="info-tip">${Object.keys(bySup).length} PO pour les matières manquantes</div>`+buildPOModalHTML(bySup,_missingMats);
   document.getElementById('poModal').classList.add('open');
 }
 function openEditPO(id){
